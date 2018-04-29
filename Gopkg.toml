@@ -28,3 +28,15 @@
 [prune]
   go-tests = true
   unused-packages = true
+
+[[constraint]]
+  name = "github.com/spf13/cobra"
+  version = "0.0.2"
+
+[[constraint]]
+  name = "github.com/go-chi/chi"
+  version = "3.3.2"
+
+[[constraint]]
+  name = "github.com/go-redis/redis"
+  version = "6.11.0"

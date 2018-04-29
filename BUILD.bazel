@@ -1,0 +1,39 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@io_bazel_rules_go//go:def.bzl", "gazelle", "go_path", "go_prefix")
+load("@bazel_gazelle//:def.bzl", "gazelle")
+load("@io_bazel_rules_docker//go:image.bzl", "go_image")
+load("@io_bazel_rules_docker//docker:docker.bzl", "docker_push")
+load("@io_bazel_rules_docker//java:image.bzl", "java_image")
+
+go_prefix("github.com/lucperkins/colossus")
+
+gazelle(
+    name = "gazelle",
+    command = "fix",
+    external = "vendored",
+)
+
+go_path(
+    name = "all_srcs",
+    mode = "link",
+    deps = [
+        "//proto/auth:auth_go_proto",
+    ],
+)
+
+go_image(
+    name = "colossus-web",
+    binary = "//web:web_docker",
+)
+
+go_image(
+    name = "colossus-auth",
+    binary = "//auth:auth_docker",
+)
+
+java_image(
+    name = "colossus-data",
+    main_class = "colossus.DataHandler",
+    runtime_deps = ["//data:data_java_lib"],
+)

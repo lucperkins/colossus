@@ -1,5 +1,7 @@
 package main
 
+import "github.com/lucperkins/colossus/cli/cmd"
+
 func main() {
-	println("OK")
+	cmd.Execute()
 }

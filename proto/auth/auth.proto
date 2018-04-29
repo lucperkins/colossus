@@ -1,0 +1,16 @@
+syntax = "proto3";
+option go_package = "github.com/lucperkins/colossus/proto/auth";
+
+package auth;
+
+message AuthRequest {
+    string password = 1;
+}
+
+message AuthResponse {
+    bool authenticated = 1;
+}
+
+service AuthService {
+    rpc Authenticate(AuthRequest) returns (AuthResponse);
+}

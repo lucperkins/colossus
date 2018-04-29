@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option go_package = "github.com/lucperkins/colossus/proto/data";
+option java_package = "colossus.data";
+option java_outer_classname = "DataProto";
+
+package data;
+
+message DataRequest {
+    string key = 1;
+}
+
+message DataResponse {
+    string value = 1;
+}
+
+service DataService {
+    rpc Get(DataRequest) returns (DataResponse) {}
+}
