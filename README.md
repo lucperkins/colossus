@@ -1,4 +1,4 @@
-# Colossus
+# Colossus — An example microservices architecture for Kubernetes
 
 This is an example project that combines several hip technologies that I like:
 
