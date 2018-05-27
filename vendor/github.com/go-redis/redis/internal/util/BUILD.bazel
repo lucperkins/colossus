@@ -1,0 +1,12 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "strconv.go",
+        "unsafe.go",
+    ],
+    importmap = "colossus/vendor/github.com/go-redis/redis/internal/util",
+    importpath = "github.com/go-redis/redis/internal/util",
+    visibility = ["//vendor/github.com/go-redis/redis:__subpackages__"],
+)

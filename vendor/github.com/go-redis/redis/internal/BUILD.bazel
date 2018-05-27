@@ -1,0 +1,19 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "error.go",
+        "internal.go",
+        "log.go",
+        "once.go",
+        "util.go",
+    ],
+    importmap = "colossus/vendor/github.com/go-redis/redis/internal",
+    importpath = "github.com/go-redis/redis/internal",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/go-redis/redis/internal/proto:go_default_library",
+        "//vendor/github.com/go-redis/redis/internal/util:go_default_library",
+    ],
+)
