@@ -21,7 +21,7 @@ go_binary(
 )
 
 go_binary(
-    name = "auth_docker",
+    name = "auth_linux",
     embed = [":go_default_library"],
     goarch = "amd64",
     goos = "linux",

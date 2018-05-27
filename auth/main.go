@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 
@@ -9,6 +10,10 @@ import (
 	"google.golang.org/grpc"
 
 	pb "github.com/lucperkins/colossus/proto/auth"
+)
+
+const (
+	PORT = 8888
 )
 
 type authHandler struct {
@@ -38,6 +43,8 @@ func (h *authHandler) Authenticate(ctx context.Context, req *pb.AuthRequest) (*p
 }
 
 func main() {
+	log.Printf("Starting up the gRPC auth server on localhost:%d", PORT)
+
 	redisClient := redis.NewClient(&redis.Options{
 		Addr: "redis-master.default.svc.cluster.local:6379",
 	})
@@ -52,7 +59,7 @@ func main() {
 
 	redisClient.Set("password", "tonydanza", 0)
 
-	listener, err := net.Listen("tcp", ":8888")
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", PORT))
 
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)

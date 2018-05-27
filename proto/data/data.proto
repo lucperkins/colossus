@@ -7,7 +7,7 @@ option java_outer_classname = "DataProto";
 package data;
 
 message DataRequest {
-    string key = 1;
+    string str = 1;
 }
 
 message DataResponse {

@@ -11,6 +11,12 @@ import (
 	"google.golang.org/grpc"
 )
 
+const (
+	PORT              = 3000
+	AUTH_SERVICE_PORT = 8888
+	DATA_SERVICE_PORT = 1111
+)
+
 type HttpServer struct {
 	authClient auth.AuthServiceClient
 	dataClient data.DataServiceClient
@@ -50,16 +56,16 @@ func (s *HttpServer) authenticate(next http.Handler) http.Handler {
 	})
 }
 
-func (s *HttpServer) Get(w http.ResponseWriter, r *http.Request) {
-	word := r.Header.Get("Word")
+func (s *HttpServer) handleString(w http.ResponseWriter, r *http.Request) {
+	str := r.Header.Get("String")
 
-	if word == "" {
-		http.Error(w, "You must specify a word using the Word header", http.StatusBadRequest)
+	if str == "" {
+		http.Error(w, "You must specify a string using the String header", http.StatusBadRequest)
 		return
 	}
 
 	req := &data.DataRequest{
-		Key: word,
+		Str: str,
 	}
 
 	ctx := r.Context()
@@ -76,9 +82,8 @@ func (s *HttpServer) Get(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	port := 3000
-
-	authConn, err := grpc.Dial("colossus-auth-svc.default.svc.cluster.local:8888", grpc.WithInsecure())
+	authConn, err := grpc.Dial(
+		fmt.Sprintf("colossus-auth-svc.default.svc.cluster.local:%d", AUTH_SERVICE_PORT), grpc.WithInsecure())
 
 	if err != nil {
 		panic(err)
@@ -86,7 +91,8 @@ func main() {
 
 	log.Print("Established connection with auth service")
 
-	dataConn, err := grpc.Dial("colossus-data-svc.default.svc.cluster.local:1111", grpc.WithInsecure())
+	dataConn, err := grpc.Dial(
+		fmt.Sprintf("colossus-data-svc.default.svc.cluster.local:%d", AUTH_SERVICE_PORT), grpc.WithInsecure())
 
 	if err != nil {
 		panic(err)
@@ -108,9 +114,9 @@ func main() {
 
 	r.Use(server.authenticate)
 
-	r.Get("/", server.Get)
+	r.Post("/string", server.handleString)
 
-	log.Printf("Now starting the server on port %d...", port)
+	log.Printf("Now starting the server on port %d...", PORT)
 
-	http.ListenAndServe(fmt.Sprintf(":%d", port), r)
+	http.ListenAndServe(fmt.Sprintf(":%d", PORT), r)
 }

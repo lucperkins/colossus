@@ -14,8 +14,6 @@ gazelle-repos:
 gazelle: gazelle-repos
 	$(BAZEL) run //:gazelle
 
-dev: gazelle build
-
 docker-registry:
 	docker run -d -p 5000:5000 --restart=always --name registry registry:2
 
@@ -23,25 +21,15 @@ minikube-start:
 	minikube start --insecure-registry localhost:5000
 
 minikube-setup:
-	eval $(minikube docker-env)
 	minikube addons enable ingress
 
-run-cli: gazelle
-	$(BAZEL) run //cli -- foo bar baz
-
-run-web: gazelle
-	$(BAZEL) run //web
-
-run-auth: gazelle
-	$(BAZEL) run //auth
-
-docker-local-push:
+docker-local-push: gazelle
 	$(BAZEL) run //:colossus-web -- --norun
 	$(BAZEL) run //:colossus-auth -- --norun
 	$(BAZEL) run //:colossus-data -- --norun
 
 deploy: docker-local-push
-	$(KCTL) apply -f k8s/web.yaml 
+	$(KCTL) apply -f k8s/colossus.yaml 
 
 teardown:
 	$(KCTL) delete svc,deployment,ing --all

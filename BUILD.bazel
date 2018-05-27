@@ -29,7 +29,7 @@ go_image(
 
 go_image(
     name = "colossus-auth",
-    binary = "//auth:auth_docker",
+    binary = "//auth:auth_linux",
 )
 
 java_image(
