@@ -10,15 +10,15 @@ proto_library(
 
 java_proto_library(
     name = "data_java_proto",
-    deps = [":data_proto"],
     visibility = ["//visibility:public"],
+    deps = [":data_proto"],
 )
 
 java_grpc_library(
     name = "data_java_grpc",
     srcs = ["data_proto"],
-    deps = [":data_java_proto"],
     visibility = ["//visibility:public"],
+    deps = [":data_java_proto"],
 )
 
 go_proto_library(

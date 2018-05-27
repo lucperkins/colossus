@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -57,18 +58,22 @@ func (s *HttpServer) authenticate(next http.Handler) http.Handler {
 }
 
 func (s *HttpServer) handleString(w http.ResponseWriter, r *http.Request) {
-	str := r.Header.Get("String")
+	requestString := r.Header.Get("String")
 
-	if str == "" {
+	if requestString == "" {
 		http.Error(w, "You must specify a string using the String header", http.StatusBadRequest)
 		return
 	}
 
-	req := &data.DataRequest{
-		Str: str,
-	}
-
 	ctx := r.Context()
+
+	s.dataHandler(ctx, requestString, w)
+}
+
+func (s *HttpServer) dataHandler(ctx context.Context, requestString string, w http.ResponseWriter) {
+	req := &data.DataRequest{
+		Request: requestString,
+	}
 
 	res, err := s.dataClient.Get(ctx, req)
 
@@ -77,8 +82,10 @@ func (s *HttpServer) handleString(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	value := res.Value
+
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(res.Value))
+	w.Write([]byte(value))
 }
 
 func main() {
@@ -92,7 +99,7 @@ func main() {
 	log.Print("Established connection with auth service")
 
 	dataConn, err := grpc.Dial(
-		fmt.Sprintf("colossus-data-svc.default.svc.cluster.local:%d", AUTH_SERVICE_PORT), grpc.WithInsecure())
+		fmt.Sprintf("colossus-data-svc.default.svc.cluster.local:%d", DATA_SERVICE_PORT), grpc.WithInsecure())
 
 	if err != nil {
 		panic(err)

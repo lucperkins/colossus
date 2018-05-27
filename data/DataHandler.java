@@ -18,9 +18,13 @@ public class DataHandler {
     static class DataImpl extends DataServiceGrpc.DataServiceImplBase {
         @Override
         public void get(DataRequest req, StreamObserver<DataResponse> resObserver) {
-            String key = req.getKey();
-            String value = key.toUpperCase();
-            DataResponse res = DataResponse.newBuilder().setValue(value).build();
+            String request = req.getRequest();
+            LOG.info(String.format("Request received for the string: \"%s\"", request));
+            String computedValue = request.toUpperCase();
+            LOG.info(String.format("Computed value: \"%s\"", computedValue));
+            DataResponse res = DataResponse.newBuilder()
+                    .setValue(computedValue)
+                    .build();
             resObserver.onNext(res);
             resObserver.onCompleted();
         }
@@ -46,7 +50,7 @@ public class DataHandler {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                System.err.println("Shutting down gRPC data server due to JVM shut down");
+                System.err.println("Shutting down gRPC data server due to JVM shutdown");
                 DataHandler.this.stop();
                 System.err.println("Server successfully shut down");
             }

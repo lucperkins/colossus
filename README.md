@@ -18,14 +18,14 @@ A "data" service that handles data requests | [`data`](data) | Java
 What do these services actually do?
 
 * The web service requires a `Password` header and a `String` header. The `Password` header is used for authentication and the `String` header is used as a data input. You need to make `POST` requests to the `/string` endpoint.
-* The auth service verifies the password passed to the web service. There is only one password that actually works: `tonydanza`. Use any other password and you'll get a `405 Unauthorized` HTTP error.
+* The auth service verifies the password passed to the web service. There is only one password that actually works: `tonydanza`. Use any other password and you'll get a `401 Unauthorized` HTTP error.
 * The data service handles words or strings that you pass to the web service using the `String` header. The data service simply capitalizes whatever you pass via that header and returns it.
 
 > Wait a second, these services don't do anything meaningful! Nope, they sure don't. But that's okay because the point of this project is to show you how to get the basic (yet not-at-all-trivial) plumbing to work. Colossus is a **boilerplate project** that's meant as a springboard to more complex and meaningful projects.
 
 ## What's the point?
 
-Getting all of these technologies to work together was a real challenge. I had to dig through countless GitHub issues and dozens of example projects to make all these things work together.
+Getting all of these technologies to work together was a real challenge. I had to dig through countless GitHub issues and dozens of example projects to make all these things work together. I'm offering this repo as a starter pack for other people with a Bazel monorepo targeting Kubernetes.
 
 ## Running Colossus locally
 
@@ -87,5 +87,64 @@ $ export MINIKUBE_IP=$(minikube ip)
 Now let's make a request to our web service:
 
 ```bash
-$ curl -i $MINIKUBE_IP
+$ curl -i -XPOST $MINIKUBE_IP/string
+HTTP/1.1 401 Unauthorized
+Server: nginx/1.13.12
+Date: Sun, 27 May 2018 22:30:02 GMT
+Content-Type: text/plain; charset=utf-8
+Content-Length: 32
+Connection: keep-alive
+X-Content-Type-Options: nosniff
+
+You cannot access this resource
 ```
+
+Oops! We need to specify a password using the `Password` header. The password that we supply will be sent to the auth service for verification.
+
+```bash
+$ curl -i -XPOST -H Password:foo $MINIKUBE_IP/string
+```
+
+Oops! Denied again. Remember: the only password that works is `tonydanza`. Let's try this again:
+
+```bash
+$ curl -i -XPOST -H Password:tonydanza $MINIKUBE_IP/string
+HTTP/1.1 400 Bad Request
+Server: nginx/1.13.12
+Date: Sun, 27 May 2018 22:33:31 GMT
+Content-Type: text/plain; charset=utf-8
+Content-Length: 50
+Connection: keep-alive
+X-Content-Type-Options: nosniff
+
+You must specify a string using the String header
+```
+
+Oops! Forgot to specify a string using the `String` header, which means that our data service isn't even being access. Let's supply a string:
+
+```bash
+$ curl -i -XPOST -H Password:tonydanza -H String:"Hello, world" $MINIKUBE_IP/string
+HTTP/1.1 200 OK
+Server: nginx/1.13.12
+Date: Sun, 27 May 2018 22:50:19 GMT
+Content-Type: text/plain; charset=utf-8
+Content-Length: 12
+Connection: keep-alive
+
+HELLO, WORLD%
+```
+
+Success! Our `Password` header is authenticating us via the auth service and the data service is handling our data request the way that we would expect. Colossus is a rousing success 👍
+
+## What's next
+
+This is a humble start but I'd like to expand it a great deal in the future. In particular I'd like to add:
+
+* A service mesh like [Conduit](https://conduit.io).
+* Some "real" services that do meaningful things, like interact with databases running on k8s or even a cloud service like Google BigTable.
+* Real REST capabilities. Right now our web service doesn't do anything cool. At the very least it should provide some interesting CRUD operations.
+* More languages. Right now Go and Java are pretty much the only languages that can be easily incorporated into a gRPC-plus-Bazel setup. I'm sure that support for Python, C++, and others is on the way, and I'll use those capabilities as the opportunity arises.
+* Componentize service building. Right now each service is its own self-contained universe. I'd like to create a reusable service abstraction (or re-use abstractions built by others) for creating new services, especially more robust configuration management.
+* Integration testing for specific services and the whole thing
+
+The good news is that the hard part---especially getting Bazel to build the right things and Kubernetes to use a local image registry---is already behind me, so adding new services is fairly trivial.

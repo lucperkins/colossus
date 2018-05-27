@@ -1,24 +1,24 @@
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
 metadata:
-  name: redis-master
+  name: redis-cluster
 spec:
   selector:
     matchLabels:
       app: redis
-      role: master
+      role: main
       tier: backend
   replicas: 5
   template:
     metadata:
       labels:
         app: redis
-        role: master
+        role: main
         tier: backend
     spec:
       containers:
-      - name: master
-        image: k8s.gcr.io/redis:e2e  # or just image: redis
+      - name: main
+        image: k8s.gcr.io/redis:e2e
         imagePullPolicy: Always
         resources:
           requests:
@@ -30,10 +30,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis-master
+  name: redis-cluster
   labels:
     app: redis
-    role: master
+    role: main
     tier: backend
 spec:
   ports:
@@ -41,5 +41,5 @@ spec:
     targetPort: 6379
   selector:
     app: redis
-    role: master
+    role: main
     tier: backend

@@ -28,8 +28,14 @@ docker-local-push: gazelle
 	$(BAZEL) run //:colossus-auth -- --norun
 	$(BAZEL) run //:colossus-data -- --norun
 
-deploy: docker-local-push
-	$(KCTL) apply -f k8s/colossus.yaml 
+k8s-redis-deploy:
+	$(KCTL) apply -f k8s/redis.yaml
+
+k8s-colossus-deploy:
+	$(KCTL) apply -f k8s/colossus.yaml
+
+
+deploy: docker-local-push k8s-colossus-deploy
 
 teardown:
 	$(KCTL) delete svc,deployment,ing --all

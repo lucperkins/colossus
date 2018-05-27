@@ -6,32 +6,29 @@ load("@io_bazel_rules_docker//go:image.bzl", "go_image")
 load("@io_bazel_rules_docker//docker:docker.bzl", "docker_push")
 load("@io_bazel_rules_docker//java:image.bzl", "java_image")
 
+# Go library prefix for all the Go stuff here
 go_prefix("github.com/lucperkins/colossus")
 
+# A Gazelle executable for auto-generating Go BUILD definitions
 gazelle(
     name = "gazelle",
     command = "fix",
     external = "vendored",
 )
 
-go_path(
-    name = "all_srcs",
-    mode = "link",
-    deps = [
-        "//proto/auth:auth_go_proto",
-    ],
-)
-
+# A Docker image for the web service (Linux binary)
 go_image(
     name = "colossus-web",
-    binary = "//web:web_docker",
+    binary = "//web:web_linux",
 )
 
+# A Docker image for the auth service (Linux binary)
 go_image(
     name = "colossus-auth",
     binary = "//auth:auth_linux",
 )
 
+# A Docker image for the data service
 java_image(
     name = "colossus-data",
     main_class = "colossus.DataHandler",

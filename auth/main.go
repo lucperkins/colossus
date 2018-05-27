@@ -9,7 +9,7 @@ import (
 	"github.com/go-redis/redis"
 	"google.golang.org/grpc"
 
-	pb "github.com/lucperkins/colossus/proto/auth"
+	"github.com/lucperkins/colossus/proto/auth"
 )
 
 const (
@@ -20,7 +20,7 @@ type authHandler struct {
 	redisClient *redis.Client
 }
 
-func (h *authHandler) Authenticate(ctx context.Context, req *pb.AuthRequest) (*pb.AuthResponse, error) {
+func (h *authHandler) Authenticate(ctx context.Context, req *auth.AuthRequest) (*auth.AuthResponse, error) {
 	var authenticated bool
 
 	password := req.Password
@@ -39,14 +39,14 @@ func (h *authHandler) Authenticate(ctx context.Context, req *pb.AuthRequest) (*p
 		authenticated = false
 	}
 
-	return &pb.AuthResponse{Authenticated: authenticated}, nil
+	return &auth.AuthResponse{Authenticated: authenticated}, nil
 }
 
 func main() {
 	log.Printf("Starting up the gRPC auth server on localhost:%d", PORT)
 
 	redisClient := redis.NewClient(&redis.Options{
-		Addr: "redis-master.default.svc.cluster.local:6379",
+		Addr: "redis-cluster.default.svc.cluster.local:6379",
 	})
 
 	_, err := redisClient.Ping().Result()
@@ -71,7 +71,7 @@ func main() {
 		redisClient: redisClient,
 	}
 
-	pb.RegisterAuthServiceServer(server, &authServer)
+	auth.RegisterAuthServiceServer(server, &authServer)
 
 	server.Serve(listener)
 }

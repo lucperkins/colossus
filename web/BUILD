@@ -22,7 +22,7 @@ go_binary(
 )
 
 go_binary(
-    name = "web_docker",
+    name = "web_linux",
     embed = [":go_default_library"],
     goarch = "amd64",
     goos = "linux",
