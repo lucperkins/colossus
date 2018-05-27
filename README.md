@@ -60,9 +60,12 @@ Now Minikube is all set. The one required dependency for Colossus is a Redis clu
 
 ```bash
 $ kubectl apply -f k8s/redis.yaml
+
+# Alternatively
+$ make k8s-redis-deploy
 ```
 
-Once that's up and running (you can check using `kubectl get pods -w`), you can deploy Colossus using one command:
+Once all five Redis pods are up and running (you can check using `kubectl get pods -w`), you can deploy Colossus using one command:
 
 ```bash
 $ make deploy

@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 public class DataHandler {
     private static final Logger LOG = Logger.getLogger(DataHandler.class.getName());
+    private static final int PORT = 1111;
 
     private Server server;
 
@@ -41,12 +42,11 @@ public class DataHandler {
     }
 
     private void start() throws IOException {
-        int port = 1111;
-        server = ServerBuilder.forPort(port)
+        server = ServerBuilder.forPort(PORT)
             .addService(new DataImpl())
             .build()
             .start();
-        LOG.info("Server successfully started on port 1111");
+        LOG.info(String.format("Server successfully started on port $d", PORT));
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
@@ -58,7 +58,7 @@ public class DataHandler {
     }
 
     public static void main(String[] args) throws InterruptedException, IOException {
-        LOG.info("Starting up gRPC data server on port 1111");
+        LOG.info(String.format("Starting up gRPC data server on port $d", PORT));
         final DataHandler server = new DataHandler();
         server.start();
         server.blockUntilShutdown();
