@@ -1,29 +1,34 @@
 workspace(name = "colossus")
 
+# Imports basic Go rules for Bazel (e.g. go_binary)
 http_archive(
     name = "io_bazel_rules_go",
     url = "https://github.com/bazelbuild/rules_go/releases/download/0.11.0/rules_go-0.11.0.tar.gz",
     sha256 = "f70c35a8c779bb92f7521ecb5a1c6604e9c3edd431e50b6376d7497abc8ad3c1",
 )
 
+# Imports the Gazelle tool for Go/Bazel
 http_archive(
     name = "bazel_gazelle",
     url = "https://github.com/bazelbuild/bazel-gazelle/releases/download/0.11.0/bazel-gazelle-0.11.0.tar.gz",
     sha256 = "92a3c59734dad2ef85dc731dbcb2bc23c4568cded79d4b87ebccd787eb89e8d0",
 )
 
+# Imports Docker rules for Bazel (e.g. docker_image)
 git_repository(
     name = "io_bazel_rules_docker",
     remote = "https://github.com/bazelbuild/rules_docker.git",
     tag = "v0.4.0",
 )
 
+# Imports gRPC for Java rules (e.g. java_grpc_library)
 git_repository(
     name = "io_grpc_grpc_java",
     remote = "https://github.com/grpc/grpc-java",
     tag = "v1.12.0",
 )
 
+# Loads Docker for Java rules (e.g. java_image)
 load(
     "@io_bazel_rules_docker//java:image.bzl",
     _java_image_repos = "repositories",
@@ -31,16 +36,19 @@ load(
 
 _java_image_repos()
 
+# Loads gRPC for Java rules
 load("@io_grpc_grpc_java//:repositories.bzl", "grpc_java_repositories")
 
 grpc_java_repositories()
 
+# Loads Go rules for Bazel
 load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")
 
 go_rules_dependencies()
 
 go_register_toolchains()
 
+# Loads Docker rules for Bazel
 load(
     "@io_bazel_rules_docker//go:image.bzl",
     _go_image_repos = "repositories",
@@ -48,17 +56,19 @@ load(
 
 _go_image_repos()
 
+# Loads Gazelle tool
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies", "go_repository")
 
 gazelle_dependencies()
 
-load(
-    "@io_bazel_rules_docker//container:container.bzl",
-    "container_pull",
-    "container_push",
-    container_repositories = "repositories",
-)
+#load(
+#    "@io_bazel_rules_docker//container:container.bzl",
+#    "container_pull",
+#    "container_push",
+#    container_repositories = "repositories",
+#)
 
+# Loads gRPC for Java depedencies
 maven_jar(
     name = "io_grpc_grpc_all",
     artifact = "io.grpc:grpc-all:1.12.0",
