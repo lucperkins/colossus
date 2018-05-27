@@ -134,13 +134,14 @@ Connection: keep-alive
 HELLO, WORLD%
 ```
 
-Success! Our `Password` header is authenticating us via the auth service and the data service is handling our data request the way that we would expect. Colossus is a rousing success 👍
+Success! Our `Password` header is authenticating us via the auth service and the data service is handling our data request the way that we would expect. Colossus is a rousing success, folks 👍
 
 ## What's next
 
 This is a humble start but I'd like to expand it a great deal in the future. In particular I'd like to add:
 
-* A service mesh like [Conduit](https://conduit.io).
+* A service mesh like [Conduit](https://conduit.io) or [Istio](https://istio.io/).
+* A [Helm](https://helm.sh/) chart
 * Some "real" services that do meaningful things, like interact with databases running on k8s or even a cloud service like Google BigTable.
 * Real REST capabilities. Right now our web service doesn't do anything cool. At the very least it should provide some interesting CRUD operations.
 * More languages. Right now Go and Java are pretty much the only languages that can be easily incorporated into a gRPC-plus-Bazel setup. I'm sure that support for Python, C++, and others is on the way, and I'll use those capabilities as the opportunity arises.
