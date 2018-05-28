@@ -125,8 +125,7 @@ spec:
   containers:
   - name: busybox
     image: busybox
-    command:
-      - "sleep"
-      - "3600"
-    imagePullPolicy: IfNotPresent
-  restartPolicy: Always
+    args:
+    - sh
+    - -c
+    - tail -f /dev/null
