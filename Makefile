@@ -35,10 +35,10 @@ k8s-colossus-deploy:
 	$(KCTL) apply -f k8s/colossus.yaml
 
 redis-set-password:
-	kubectl exec -it $(shell $(KCTL) get pods -l app=redis -o jsonpath='{.items[0].metadata.name}') -- redis-cli -n 0 -h colossus-redis-cluster.default.svc.cluster.local SET password tonydanza
+	kubectl exec -it $(shell $(KCTL) get pods -l app=redis -o jsonpath='{.items[0].metadata.name}') -- redis-cli SET password tonydanza
 
 redis-get-password:
-	kubectl exec -it $(shell $(KCTL) get pods -l app=redis -o jsonpath='{.items[0].metadata.name}') -- redis-cli -n 0 GET password
+	kubectl exec -it $(shell $(KCTL) get pods -l app=redis -o jsonpath='{.items[0].metadata.name}') -- redis-cli GET password
 
 deploy: docker-local-push k8s-colossus-deploy
 
