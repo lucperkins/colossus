@@ -69,13 +69,13 @@ Once all five Redis pods are up and running (you can check using `kubectl get po
 
 ```bash
 $ REDIS_POD=$(kubectl get pods -l app=redis -o jsonpath='{.items[0].metadata.name}')
-$ kubectl exec -it $REDIS_POD -- redis-cli -h redis-cluster.default.svc.cluster.local SET password tonydanza
+$ kubectl exec -it $REDIS_POD -- redis-cli -n 0 -h redis-cluster.default.svc.cluster.local SET password tonydanza
 ```
 
 You can then verify that the password has been set throughout the cluster by running a `GET password` query from a different pod in the cluster:
 
 ```bash
-$ kubectl exec -it $(kubectl get pods -l app=redis -o jsonpath='{.items[1].metadata.name}') -- redis-cli GET password
+$ kubectl exec -it $(kubectl get pods -l app=redis -o jsonpath='{.items[1].metadata.name}') -- redis-cli -n 0 GET password
 "tonydanza"
 ```
 
