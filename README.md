@@ -65,7 +65,21 @@ $ kubectl apply -f k8s/redis.yaml
 $ make k8s-redis-deploy
 ```
 
-Once all five Redis pods are up and running (you can check using `kubectl get pods -w`), you can deploy Colossus using one command:
+Once all five Redis pods are up and running (you can check using `kubectl get pods -w`), you need to set a password for the authentication service. To set the password as `tonydanza` (which the later curl examples assume):
+
+```bash
+$ REDIS_POD=$(kubectl get pods -l app=redis -o jsonpath='{.items[0].metadata.name}')
+$ kubectl exec -it $REDIS_POD -- redis-cli -h redis-cluster.default.svc.cluster.local SET password tonydanza
+```
+
+You can then verify that the password has been set throughout the cluster by running a `GET password` query from a different pod in the cluster:
+
+```bash
+$ kubectl exec -it $(kubectl get pods -l app=redis -o jsonpath='{.items[1].metadata.name}') -- redis-cli GET password
+"tonydanza"
+```
+
+Now that Redis is all set up, you can deploy Colossus using one command:
 
 ```bash
 $ make deploy
@@ -84,7 +98,7 @@ Run `kubectl get pods` and if all of the pods have the status `Running` then Col
 In order to access the web service, you'll need to get an IP address for Minikube. I recommend setting it as an environment variable:
 
 ```bash
-$ export MINIKUBE_IP=$(minikube ip)
+$ MINIKUBE_IP=$(minikube ip)
 ```
 
 Now let's make a request to our web service:

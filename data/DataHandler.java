@@ -46,7 +46,7 @@ public class DataHandler {
             .addService(new DataImpl())
             .build()
             .start();
-        LOG.info(String.format("Server successfully started on port $d", PORT));
+        LOG.info(String.format("Server successfully started on port %d", PORT));
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
@@ -58,7 +58,7 @@ public class DataHandler {
     }
 
     public static void main(String[] args) throws InterruptedException, IOException {
-        LOG.info(String.format("Starting up gRPC data server on port $d", PORT));
+        LOG.info(String.format("Starting up gRPC data server on port %d", PORT));
         final DataHandler server = new DataHandler();
         server.start();
         server.blockUntilShutdown();

@@ -57,8 +57,6 @@ func main() {
 
 	log.Print("Successfully connected to Redis")
 
-	redisClient.Set("password", "tonydanza", 0)
-
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", PORT))
 
 	if err != nil {
