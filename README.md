@@ -153,6 +153,21 @@ HELLO, WORLD%
 
 Success! Our `Password` header is authenticating us via the auth service and the data service is handling our data request the way that we would expect. Colossus is a rousing success, folks 👍
 
+Just to show that our auth service is working correctly (no false positives!), let's change the password and make another request to our web service using the old password:
+
+```bash
+$ kubectl exec -it $REDIS_POD -- redis-cli -n 0 -h redis-cluster.default.svc.cluster.local SET password somethingelse
+$ curl -i -XPOST -H Password:tonydanza -H String:"This should fail" $MINIKUBE_IP/string
+```
+
+Unauthorized! Ruh roh. Now let's use the proper password:
+
+```bash
+$ curl -i -XPOST -H Password:somethingelse -H String:"This should work now" $MINIKUBE_IP/string
+```
+
+Success 😎.
+
 ## What's next
 
 This is a humble start but I'd like to expand it a great deal in the future. In particular I'd like to add:
