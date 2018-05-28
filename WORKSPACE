@@ -64,17 +64,17 @@ gazelle_dependencies()
 # gRPC for Java dependencies (shorthand)
 bind(
     name = "grpc-core",
-    actual = "@io_grpc_grpc_java//core"
+    actual = "@io_grpc_grpc_java//core",
 )
 
 bind(
     name = "grpc-netty",
-    actual = "@io_grpc_grpc_java//netty"
+    actual = "@io_grpc_grpc_java//netty",
 )
 
 bind(
     name = "grpc-stub",
-    actual = "@io_grpc_grpc_java//stub"
+    actual = "@io_grpc_grpc_java//stub",
 )
 
 # Gazelle-generated Go dependencies

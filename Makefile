@@ -1,5 +1,5 @@
 BAZEL = /usr/local/bin/bazel
-KCTL  = kubectl
+KCTL  = ~/google-cloud-sdk/bin/kubectl
 
 clean:
 	$(BAZEL) clean
@@ -34,6 +34,11 @@ k8s-redis-deploy:
 k8s-colossus-deploy:
 	$(KCTL) apply -f k8s/colossus.yaml
 
+redis-set-password:
+	kubectl exec -it $(shell $(KCTL) get pods -l app=redis -o jsonpath='{.items[0].metadata.name}') -- redis-cli -n 0 -h colossus-redis-cluster.default.svc.cluster.local SET password tonydanza
+
+redis-get-password:
+	kubectl exec -it $(shell $(KCTL) get pods -l app=redis -o jsonpath='{.items[0].metadata.name}') -- redis-cli -n 0 GET password
 
 deploy: docker-local-push k8s-colossus-deploy
 

@@ -3,11 +3,11 @@ java_library(
     srcs = ["DataHandler.java"],
     visibility = ["//visibility:public"],
     deps = [
-        "//proto/data:data_java_grpc",
-        "//proto/data:data_java_proto",
         "//external:grpc-core",
         "//external:grpc-netty",
         "//external:grpc-stub",
+        "//proto/data:data_java_grpc",
+        "//proto/data:data_java_proto",
     ],
 )
 
