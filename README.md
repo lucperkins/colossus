@@ -1,6 +1,6 @@
 # Colossus — An example microservices architecture for Kubernetes
 
-This is an example project that combines several hip technologies that I like:
+This is an example project that combines several cloud native technologies that I really like and have been meaning to get working in a meaningful way:
 
 * The [Bazel](https://bazel.build) build tool
 * [Kubernetes](https://kubernetes.io) and [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube/)
