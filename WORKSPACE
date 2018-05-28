@@ -61,19 +61,23 @@ load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies", "go_repository")
 
 gazelle_dependencies()
 
-#load(
-#    "@io_bazel_rules_docker//container:container.bzl",
-#    "container_pull",
-#    "container_push",
-#    container_repositories = "repositories",
-#)
-
-# Loads gRPC for Java depedencies
-maven_jar(
-    name = "io_grpc_grpc_all",
-    artifact = "io.grpc:grpc-all:1.12.0",
+# gRPC for Java dependencies (shorthand)
+bind(
+    name = "grpc-core",
+    actual = "@io_grpc_grpc_java//core"
 )
 
+bind(
+    name = "grpc-netty",
+    actual = "@io_grpc_grpc_java//netty"
+)
+
+bind(
+    name = "grpc-stub",
+    actual = "@io_grpc_grpc_java//stub"
+)
+
+# Gazelle-generated Go dependencies
 go_repository(
     name = "com_github_inconshreveable_mousetrap",
     commit = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75",

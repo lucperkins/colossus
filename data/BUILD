@@ -5,9 +5,9 @@ java_library(
     deps = [
         "//proto/data:data_java_grpc",
         "//proto/data:data_java_proto",
-        "@io_grpc_grpc_java//core",
-        "@io_grpc_grpc_java//netty",
-        "@io_grpc_grpc_java//stub",
+        "//external:grpc-core",
+        "//external:grpc-netty",
+        "//external:grpc-stub",
     ],
 )
 
