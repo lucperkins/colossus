@@ -17,6 +17,8 @@ public class DataHandler {
     private Server server;
 
     static class DataImpl extends DataServiceGrpc.DataServiceImplBase {
+        private static final Logger LOG = Logger.getLogger(DataImpl.class.getName());
+
         @Override
         public void get(DataRequest req, StreamObserver<DataResponse> resObserver) {
             String request = req.getRequest();
@@ -50,9 +52,9 @@ public class DataHandler {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                System.err.println("Shutting down gRPC data server due to JVM shutdown");
+                LOG.info("Shutting down gRPC data server due to JVM shutdown");
                 DataHandler.this.stop();
-                System.err.println("Server successfully shut down");
+                LOG.info("Server successfully shut down");
             }
         });
     }
