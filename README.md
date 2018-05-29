@@ -1,4 +1,4 @@
-# Colossus — An example microservices architecture for Kubernetes
+# Colossus — An example microservices architecture for Kubernetes powered by Bazel, Go, Java, Docker, and gRPC
 
 This is an example project that combines several cloud native technologies that I really like and have been meaning to get working in a meaningful way:
 
