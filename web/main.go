@@ -90,7 +90,7 @@ func (s *HttpServer) dataHandler(ctx context.Context, requestString string, w ht
 
 func main() {
 	authConn, err := grpc.Dial(
-		fmt.Sprintf("colossus-auth-svc.default.svc.cluster.local:%d", AUTH_SERVICE_PORT), grpc.WithInsecure())
+		fmt.Sprintf("colossus-auth-svc:%d", AUTH_SERVICE_PORT), grpc.WithInsecure())
 
 	if err != nil {
 		panic(err)
@@ -99,7 +99,7 @@ func main() {
 	log.Print("Established connection with auth service")
 
 	dataConn, err := grpc.Dial(
-		fmt.Sprintf("colossus-data-svc.default.svc.cluster.local:%d", DATA_SERVICE_PORT), grpc.WithInsecure())
+		fmt.Sprintf("colossus-data-svc:%d", DATA_SERVICE_PORT), grpc.WithInsecure())
 
 	if err != nil {
 		panic(err)

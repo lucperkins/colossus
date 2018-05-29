@@ -44,6 +44,7 @@ deploy: docker-local-push k8s-colossus-deploy
 
 teardown:
 	$(KCTL) delete svc,deployment,ing --all
+	$(KCTL) delete po/busybox
 
 restart: teardown deploy
 

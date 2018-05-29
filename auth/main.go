@@ -46,7 +46,7 @@ func main() {
 	log.Printf("Starting up the gRPC auth server on localhost:%d", PORT)
 
 	redisClient := redis.NewClient(&redis.Options{
-		Addr: "colossus-redis-cluster.default.svc.cluster.local:6379",
+		Addr: "colossus-redis-cluster:6379",
 	})
 
 	_, err := redisClient.Ping().Result()
