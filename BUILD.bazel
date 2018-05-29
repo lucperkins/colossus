@@ -13,8 +13,9 @@ go_prefix("github.com/lucperkins/colossus")
 gazelle(
     name = "gazelle",
     command = "fix",
-    external = "vendored",
 )
+
+# gazelle:exclude vendor
 
 # A Docker image for the web service (Linux binary)
 go_image(

@@ -6,10 +6,9 @@ go_library(
     importmap = "vendor/google.golang.org/grpc",
     importpath = "github.com/lucperkins/colossus/auth",
     visibility = ["//visibility:public"],
-    # keep
     deps = [
         "//proto/auth:go_default_library",
-        "//vendor/github.com/go-redis/redis:go_default_library",
+        "@com_github_go_redis_redis//:go_default_library",
         "@org_golang_google_grpc//:go_default_library",
     ],
 )
