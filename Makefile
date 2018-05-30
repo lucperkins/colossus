@@ -1,5 +1,5 @@
-BAZEL = /usr/local/bin/bazel
-KCTL  = ~/google-cloud-sdk/bin/kubectl
+BAZEL = bazel
+KCTL  = kubectl
 
 clean:
 	$(BAZEL) clean
