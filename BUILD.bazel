@@ -15,6 +15,7 @@ gazelle(
     command = "fix",
 )
 
+# This line is necessary to keep Gazelle from using the vendored gRPC for Go library:
 # gazelle:exclude vendor
 
 # A Docker image for the web service (Linux binary)
