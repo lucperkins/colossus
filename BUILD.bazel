@@ -1,18 +1,14 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@io_bazel_rules_go//go:def.bzl", "gazelle", "go_path", "go_prefix")
 load("@bazel_gazelle//:def.bzl", "gazelle")
 load("@io_bazel_rules_docker//go:image.bzl", "go_image")
-load("@io_bazel_rules_docker//docker:docker.bzl", "docker_push")
 load("@io_bazel_rules_docker//java:image.bzl", "java_image")
-
-# Go library prefix for all the Go stuff here
-go_prefix("github.com/lucperkins/colossus")
 
 # A Gazelle executable for auto-generating Go BUILD definitions
 gazelle(
     name = "gazelle",
     command = "fix",
+    prefix = "github.com/lucperkins/colossus",
 )
 
 # This line is necessary to keep Gazelle from using the vendored gRPC for Go library:

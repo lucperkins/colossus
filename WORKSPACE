@@ -1,17 +1,17 @@
 workspace(name = "colossus")
 
 # Imports basic Go rules for Bazel (e.g. go_binary)
-http_archive(
+git_repository(
     name = "io_bazel_rules_go",
-    url = "https://github.com/bazelbuild/rules_go/releases/download/0.12.0/rules_go-0.12.0.tar.gz",
-    sha256 = "c1f52b8789218bb1542ed362c4f7de7052abcf254d865d96fb7ba6d44bc15ee3",
+    remote = "https://github.com/bazelbuild/rules_go.git",
+    commit = "e4d0254fb249a09fb01f052b23d3baddae1b70ec",
 )
 
 # Imports the Gazelle tool for Go/Bazel
-http_archive(
+git_repository(
     name = "bazel_gazelle",
-    url = "https://github.com/bazelbuild/bazel-gazelle/releases/download/0.12.0/bazel-gazelle-0.12.0.tar.gz",
-    sha256 = "ddedc7aaeb61f2654d7d7d4fd7940052ea992ccdb031b8f9797ed143ac7e8d43",
+    remote = "https://github.com/bazelbuild/bazel-gazelle",
+    commit = "644ec7202aa352b78d65bc66abc2c0616d76cc84",
 )
 
 # Imports Docker rules for Bazel (e.g. docker_image)
