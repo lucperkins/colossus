@@ -47,13 +47,16 @@ $ minikube start --insecure-registry localhost:5000
 $ make minikube-start
 ```
 
-Once Minikube is up and running (use `minikube status` to check), you'll need to enable the ingress add-on:
+Once Minikube is up and running (use `minikube status` to check), you'll need to enable the ingress add-on and set the Docker environment:
 
 ```bash
 $ minikube addons enable ingress
 
 # Alternatively
 $ make minikube-setup
+
+# Set up the Docker environment for Minikube
+$ eval $(minkube docker-env)
 ```
 
 Now Minikube is all set. The one required dependency for Colossus is a Redis cluster. To run a one-node Redis cluster in Kubernetes-on-Minikube (configuration in [`k8s/redis.yaml`](k8s/redis.yaml)):
