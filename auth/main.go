@@ -6,7 +6,6 @@ import (
 	"log"
 	"net"
 
-	"github.com/fluent/fluent-logger-golang/fluent"
 	"github.com/go-redis/redis"
 	"google.golang.org/grpc"
 
@@ -19,7 +18,6 @@ const (
 
 type authHandler struct {
 	redisClient *redis.Client
-	logger      *fluent.Fluent
 }
 
 func (h *authHandler) Authenticate(ctx context.Context, req *auth.AuthRequest) (*auth.AuthResponse, error) {
@@ -45,17 +43,6 @@ func (h *authHandler) Authenticate(ctx context.Context, req *auth.AuthRequest) (
 }
 
 func main() {
-	log, err := fluent.New(fluent.Config{
-		FluentPort: 80,
-		FluentHost: "elasticsearch",
-	})
-
-	if err != nil {
-		log.Fatalf("Could not set up fluentd logger: %v", err)
-	}
-
-	defer logger.Close()
-
 	log.Printf("Starting up the gRPC auth server on localhost:%d", PORT)
 
 	redisClient := redis.NewClient(&redis.Options{
@@ -68,13 +55,9 @@ func main() {
 		log.Fatalf("Could not connect to Redis cluster: %v", err)
 	}
 
-	defer redisClient.Close()
-
 	log.Print("Successfully connected to Redis")
 
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", PORT))
-
-	defer listener.Close()
 
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
