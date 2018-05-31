@@ -1,5 +1,7 @@
-BAZEL = bazel
-KCTL  = kubectl
+BAZEL           = bazel
+KCTL            = kubectl
+REDIS_POD       = $(shell $(KCTL) get pods -l app=redis -o jsonpath='{.items[0].metadata.name}')
+REDIS_CLI_EXEC  = $(KCTL) exec -it $(REDIS_POD) -- redis-cli
 
 clean:
 	$(BAZEL) clean
@@ -35,10 +37,10 @@ k8s-colossus-deploy:
 	$(KCTL) apply -f k8s/colossus.yaml
 
 redis-set-password:
-	kubectl exec -it $(shell $(KCTL) get pods -l app=redis -o jsonpath='{.items[0].metadata.name}') -- redis-cli SET password tonydanza
+	$(REDIS_CLI_EXEC) SET password tonydanza
 
 redis-get-password:
-	kubectl exec -it $(shell $(KCTL) get pods -l app=redis -o jsonpath='{.items[0].metadata.name}') -- redis-cli GET password
+	$(REDIS_CLI_EXEC) GET password
 
 deploy: docker-local-push k8s-colossus-deploy
 
