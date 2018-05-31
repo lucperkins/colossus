@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  name = "github.com/fluent/fluent-logger-golang"
+  packages = ["fluent"]
+  revision = "8bbc2356beaf021b04c9bd5cdc76ea5a7ccb40ec"
+  version = "v1.3.0"
+
+[[projects]]
   name = "github.com/go-chi/chi"
   packages = ["."]
   revision = "e83ac2304db3c50cf03d96a2fcd39009d458bc35"
@@ -35,22 +41,16 @@
   version = "v1.1.0"
 
 [[projects]]
-  name = "github.com/inconshreveable/mousetrap"
+  name = "github.com/philhofer/fwd"
   packages = ["."]
-  revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
-  version = "v1.0"
+  revision = "bb6d471dc95d4fe11e432687f8b70ff496cf3136"
+  version = "v1.0.0"
 
 [[projects]]
-  name = "github.com/spf13/cobra"
-  packages = ["."]
-  revision = "a1f051bc3eba734da4772d60e2d677f47cf93ef4"
-  version = "v0.0.2"
-
-[[projects]]
-  name = "github.com/spf13/pflag"
-  packages = ["."]
-  revision = "583c0c0531f06d5278b7d917446061adc344b5cd"
-  version = "v1.0.1"
+  name = "github.com/tinylib/msgp"
+  packages = ["msgp"]
+  revision = "b2b6a672cf1e5b90748f79b8b81fc8c5cf0571a1"
+  version = "1.0.2"
 
 [[projects]]
   branch = "master"
@@ -127,6 +127,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c3adb88d611204643e18830d57c4510e1aa64ed3d177c766cfacde422e21c657"
+  inputs-digest = "b02e1fcd92d1986c53e59138c2ac5d7e720ae22f187cfbe05e8b428fbaebc042"
   solver-name = "gps-cdcl"
   solver-version = 1

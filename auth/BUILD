@@ -8,6 +8,7 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//proto/auth:go_default_library",
+        "@com_github_fluent_fluent_logger_golang//fluent:go_default_library",
         "@com_github_go_redis_redis//:go_default_library",
         "@org_golang_google_grpc//:go_default_library",
     ],

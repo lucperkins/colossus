@@ -227,3 +227,21 @@ go_repository(
     commit = "0f9028adf0837cf93c9705817493e5f6997cf026",
     importpath = "github.com/go-redis/redis",
 )
+
+go_repository(
+    name = "com_github_fluent_fluent_logger_golang",
+    commit = "8bbc2356beaf021b04c9bd5cdc76ea5a7ccb40ec",
+    importpath = "github.com/fluent/fluent-logger-golang",
+)
+
+go_repository(
+    name = "com_github_philhofer_fwd",
+    commit = "bb6d471dc95d4fe11e432687f8b70ff496cf3136",
+    importpath = "github.com/philhofer/fwd",
+)
+
+go_repository(
+    name = "com_github_tinylib_msgp",
+    commit = "b2b6a672cf1e5b90748f79b8b81fc8c5cf0571a1",
+    importpath = "github.com/tinylib/msgp",
+)
