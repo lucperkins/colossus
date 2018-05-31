@@ -3,7 +3,6 @@ load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
 go_library(
     name = "go_default_library",
     srcs = ["main.go"],
-    importmap = "vendor/google.golang.org/grpc",
     importpath = "github.com/lucperkins/colossus/web",
     visibility = ["//visibility:private"],
     # keep
