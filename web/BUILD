@@ -21,7 +21,7 @@ go_binary(
 )
 
 go_binary(
-    name = "web_linux",
+    name = "web_linux_bin",
     embed = [":go_default_library"],
     goarch = "amd64",
     goos = "linux",

@@ -16,13 +16,13 @@ gazelle(
 # A Docker image for the web service (Linux binary)
 go_image(
     name = "colossus-web",
-    binary = "//web:web_linux",
+    binary = "//web:web_linux_bin",
 )
 
 # A Docker image for the auth service (Linux binary)
 go_image(
     name = "colossus-auth",
-    binary = "//auth:auth_linux",
+    binary = "//auth:auth_linux_bin",
 )
 
 # A Docker image for the data service

@@ -18,6 +18,36 @@ public class DataHandler {
 
     private Server server;
 
+    static class StreamingResponder implements StreamObserver<Data.DataRequest> {
+        private StreamObserver<Data.DataResponse> observer;
+        private List<String> items = new ArrayList<>();
+
+        StreamingResponder(StreamObserver<Data.DataResponse> observer) {
+            this.observer = observer;
+        }
+
+        @Override
+        public void onNext(Data.DataRequest req) {
+            items.add(req.getRequest().replace("f", "9").toUpperCase());
+        }
+
+        @Override
+        public void onError(Throwable t) {
+            observer.onError(t);
+        }
+
+        @Override
+        public void onCompleted() {
+            Data.DataResponse res = Data.DataResponse.newBuilder()
+                    .setValue(items.toString())
+                    .build();
+
+            this.observer.onNext(res);
+
+            this.observer.onCompleted();
+        }
+    }
+
     static class DataImpl extends DataServiceGrpc.DataServiceImplBase {
         private static final Logger LOG = Logger.getLogger(DataImpl.class.getName());
 
@@ -49,29 +79,8 @@ public class DataHandler {
         }
 
         @Override
-        public StreamObserver<Data.DataRequest> streamingPut(final StreamObserver<Data.DataResponse> responseObserver) {
-            List<String> strings = new ArrayList<>();
-
-            return new StreamObserver<Data.DataRequest>() {
-                @Override
-                public void onNext(Data.DataRequest req) {
-                    strings.add(req.getRequest().toUpperCase());
-                }
-
-                @Override
-                public void onError(Throwable t) {
-                    LOG.warning(t.getMessage());
-                }
-
-                @Override
-                public void onCompleted() {
-                    Data.DataResponse res = Data.DataResponse.newBuilder()
-                            .setValue(strings.toString())
-                            .build();
-                    responseObserver.onNext(res);
-                    responseObserver.onCompleted();
-                }
-            };
+        public StreamObserver<Data.DataRequest> streamingPut(final StreamObserver<Data.DataResponse> resObserver) {
+            return new StreamingResponder(resObserver);
         }
 
     }

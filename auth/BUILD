@@ -13,13 +13,13 @@ go_library(
 )
 
 go_binary(
-    name = "auth",
+    name = "auth_bin",
     embed = [":go_default_library"],
     visibility = ["//visibility:public"],
 )
 
 go_binary(
-    name = "auth_linux",
+    name = "auth_linux_bin",
     embed = [":go_default_library"],
     goarch = "amd64",
     goos = "linux",
