@@ -95,20 +95,21 @@ public class DataHandler {
         if (server != null) server.shutdown();
     }
 
+    private void shutdownHook() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            LOG.info("Shutting down gRPC data server due to JVM shutdown");
+            DataHandler.this.stop();
+            LOG.info("Server successfully shut down");
+        }));
+    }
+
     private void start() throws IOException {
         server = ServerBuilder.forPort(PORT)
             .addService(new DataImpl())
             .build()
             .start();
         LOG.info(String.format("Server successfully started on port %d", PORT));
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                LOG.info("Shutting down gRPC data server due to JVM shutdown");
-                DataHandler.this.stop();
-                LOG.info("Server successfully shut down");
-            }
-        });
+        shutdownHook();
     }
 
     public static void main(String[] args) throws InterruptedException, IOException {
