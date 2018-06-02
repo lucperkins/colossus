@@ -3,12 +3,15 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/lucperkins/colossus/proto/auth"
 	"github.com/lucperkins/colossus/proto/data"
+	"github.com/unrolled/render"
 	"google.golang.org/grpc"
 )
 
@@ -21,6 +24,7 @@ const (
 type HttpServer struct {
 	authClient auth.AuthServiceClient
 	dataClient data.DataServiceClient
+	renderer   *render.Render
 }
 
 func (s *HttpServer) authenticate(next http.Handler) http.Handler {
@@ -70,6 +74,40 @@ func (s *HttpServer) handleString(w http.ResponseWriter, r *http.Request) {
 	s.dataHandler(ctx, requestString, w)
 }
 
+func (s *HttpServer) handleStream(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
+	defer cancel()
+
+	req := &data.EmptyRequest{}
+
+	stream, err := s.dataClient.StreamingGet(ctx, req)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	items := []string{}
+
+	for {
+		value, err := stream.Recv()
+
+		if err == io.EOF {
+			break
+		}
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		items = append(items, value.Value)
+	}
+
+	s.renderer.JSON(w, http.StatusOK, items)
+
+}
+
 func (s *HttpServer) dataHandler(ctx context.Context, requestString string, w http.ResponseWriter) {
 	req := &data.DataRequest{
 		Request: requestString,
@@ -112,9 +150,12 @@ func main() {
 
 	r := chi.NewRouter()
 
+	renderer := render.New(render.Options{})
+
 	server := HttpServer{
 		authClient: authClient,
 		dataClient: dataClient,
+		renderer:   renderer,
 	}
 
 	log.Print("Using the following middleware: authentication")
@@ -122,6 +163,8 @@ func main() {
 	r.Use(server.authenticate)
 
 	r.Post("/string", server.handleString)
+
+	r.Get("/stream", server.handleStream)
 
 	log.Printf("Now starting the server on port %d...", PORT)
 

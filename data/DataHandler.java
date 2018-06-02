@@ -1,7 +1,6 @@
 package colossus;
 
-import colossus.data.DataProto.DataRequest;
-import colossus.data.DataProto.DataResponse;
+import colossus.data.Data;
 import colossus.data.DataServiceGrpc;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
@@ -9,6 +8,7 @@ import io.grpc.stub.StreamObserver;
 
 import java.io.IOException;
 import java.util.logging.Logger;
+import java.util.stream.IntStream;
 
 public class DataHandler {
     private static final Logger LOG = Logger.getLogger(DataHandler.class.getName());
@@ -20,15 +20,29 @@ public class DataHandler {
         private static final Logger LOG = Logger.getLogger(DataImpl.class.getName());
 
         @Override
-        public void get(DataRequest req, StreamObserver<DataResponse> resObserver) {
+        public void get(Data.DataRequest req, StreamObserver<Data.DataResponse> resObserver) {
             String request = req.getRequest();
             LOG.info(String.format("Request received for the string: \"%s\"", request));
             String computedValue = request.toUpperCase();
             LOG.info(String.format("Computed value: \"%s\"", computedValue));
-            DataResponse res = DataResponse.newBuilder()
+            Data.DataResponse res = Data.DataResponse.newBuilder()
                     .setValue(computedValue)
                     .build();
             resObserver.onNext(res);
+            resObserver.onCompleted();
+        }
+
+        @Override
+        public void streamingGet(Data.EmptyRequest req, StreamObserver<Data.DataResponse> resObserver) {
+            LOG.info("Request received for streaming data");
+
+            Data.DataResponse.Builder resBldr = Data.DataResponse.newBuilder();
+
+            IntStream.range(0, 10).forEach(i -> {
+                String value = String.format("Response %d", i);
+                resObserver.onNext(resBldr.setValue(value).build());
+            });
+
             resObserver.onCompleted();
         }
     }

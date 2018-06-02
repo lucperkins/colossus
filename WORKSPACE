@@ -229,3 +229,9 @@ go_repository(
     commit = "0f9028adf0837cf93c9705817493e5f6997cf026",
     importpath = "github.com/go-redis/redis",
 )
+
+go_repository(
+    name = "com_github_unrolled_render",
+    commit = "65450fb6b2d3595beca39f969c411db8f8d5c806",
+    importpath = "github.com/unrolled/render",
+)
