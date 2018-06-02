@@ -33,11 +33,7 @@ func (h *authHandler) Authenticate(ctx context.Context, req *auth.AuthRequest) (
 		log.Fatalf("Could not fetch value from Redis: %v", err)
 	}
 
-	if password == value {
-		authenticated = true
-	} else {
-		authenticated = false
-	}
+	authenticated = password == value
 
 	return &auth.AuthResponse{Authenticated: authenticated}, nil
 }
