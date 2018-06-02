@@ -7,6 +7,8 @@ import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
@@ -45,6 +47,33 @@ public class DataHandler {
 
             resObserver.onCompleted();
         }
+
+        @Override
+        public StreamObserver<Data.DataRequest> streamingPut(final StreamObserver<Data.DataResponse> responseObserver) {
+            List<String> strings = new ArrayList<>();
+
+            return new StreamObserver<Data.DataRequest>() {
+                @Override
+                public void onNext(Data.DataRequest req) {
+                    strings.add(req.getRequest().toUpperCase());
+                }
+
+                @Override
+                public void onError(Throwable t) {
+                    LOG.warning(t.getMessage());
+                }
+
+                @Override
+                public void onCompleted() {
+                    Data.DataResponse res = Data.DataResponse.newBuilder()
+                            .setValue(strings.toString())
+                            .build();
+                    responseObserver.onNext(res);
+                    responseObserver.onCompleted();
+                }
+            };
+        }
+
     }
 
     private void blockUntilShutdown() throws InterruptedException {

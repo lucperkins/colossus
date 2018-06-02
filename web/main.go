@@ -108,6 +108,44 @@ func (s *HttpServer) handleStream(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func (s *HttpServer) handlePut(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
+	defer cancel()
+
+	stream, err := s.dataClient.StreamingPut(ctx)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	items := []string{"foo", "bar", "baz"}
+
+	for _, item := range items {
+		req := &data.DataRequest{
+			Request: item,
+		}
+
+		if err := stream.Send(req); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	res, err := stream.CloseAndRecv()
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	value := map[string]string{
+		"value": res.Value,
+	}
+
+	s.renderer.JSON(w, http.StatusAccepted, value)
+}
+
 func (s *HttpServer) dataHandler(ctx context.Context, requestString string, w http.ResponseWriter) {
 	req := &data.DataRequest{
 		Request: requestString,
@@ -165,6 +203,8 @@ func main() {
 	r.Post("/string", server.handleString)
 
 	r.Get("/stream", server.handleStream)
+
+	r.Put("/stream", server.handlePut)
 
 	log.Printf("Now starting the server on port %d...", PORT)
 

@@ -44,6 +44,10 @@ redis-get-password:
 
 deploy: docker-local-push k8s-colossus-deploy
 
+restart-colossus:
+	$(KCTL) delete -f k8s/colossus.yaml
+	$(KCTL) apply -f k8s/colossus.yaml
+
 teardown:
 	$(KCTL) delete svc,deployment,ing --all
 	$(KCTL) delete po/busybox

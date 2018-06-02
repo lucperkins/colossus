@@ -19,4 +19,5 @@ message EmptyRequest {}
 service DataService {
     rpc Get(DataRequest) returns (DataResponse) {}
     rpc StreamingGet(EmptyRequest) returns (stream DataResponse) {}
+    rpc StreamingPut(stream DataRequest) returns (DataResponse) {}
 }
