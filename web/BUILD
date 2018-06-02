@@ -5,11 +5,10 @@ go_library(
     srcs = ["main.go"],
     importpath = "github.com/lucperkins/colossus/web",
     visibility = ["//visibility:private"],
-    # keep
     deps = [
         "//proto/auth:go_default_library",
         "//proto/data:go_default_library",
-        "//vendor/github.com/go-chi/chi:go_default_library",
+        "@com_github_go_chi_chi//:go_default_library",
         "@org_golang_google_grpc//:go_default_library",
     ],
 )

@@ -35,24 +35,6 @@
   version = "v1.1.0"
 
 [[projects]]
-  name = "github.com/inconshreveable/mousetrap"
-  packages = ["."]
-  revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
-  version = "v1.0"
-
-[[projects]]
-  name = "github.com/spf13/cobra"
-  packages = ["."]
-  revision = "a1f051bc3eba734da4772d60e2d677f47cf93ef4"
-  version = "v0.0.2"
-
-[[projects]]
-  name = "github.com/spf13/pflag"
-  packages = ["."]
-  revision = "583c0c0531f06d5278b7d917446061adc344b5cd"
-  version = "v1.0.1"
-
-[[projects]]
   branch = "master"
   name = "golang.org/x/net"
   packages = [
@@ -127,6 +109,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c3adb88d611204643e18830d57c4510e1aa64ed3d177c766cfacde422e21c657"
+  inputs-digest = "ef39ff1329c89e5e2ff1cdc9325f02fd4c2bb07502458545da5ed0c5dbb38706"
   solver-name = "gps-cdcl"
   solver-version = 1

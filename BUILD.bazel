@@ -7,7 +7,6 @@ load("@io_bazel_rules_docker//java:image.bzl", "java_image")
 # A Gazelle executable for auto-generating Go BUILD definitions
 gazelle(
     name = "gazelle",
-    command = "fix",
     prefix = "github.com/lucperkins/colossus",
 )
 
