@@ -7,9 +7,9 @@ message UserInfoRequest {
 }
 
 message UserInfoResponse {
-    map<string, string> user_info = 1;
+    string user_info = 1;
 }
 
-service DataService {
-    rpc Get(UserInfoRequest) returns (UserInfoResponse) {}
+service UserInfoService {
+    rpc GetUserInfo(UserInfoRequest) returns (UserInfoResponse) {}
 }

@@ -91,6 +91,16 @@ bind(
     actual = "@io_grpc_grpc_java//stub",
 )
 
+bind(
+    name = "grpc_cpp_plugin",
+    actual = "@com_github_grpc_grpc//:grpc_cpp_plugin",
+)
+
+bind(
+    name = "grpc++_codegen_proto",
+    actual = "@com_github_grpc_grpc//:grpc++_codegen_proto",
+)
+
 # Gazelle-generated Go dependencies
 go_repository(
     name = "com_github_inconshreveable_mousetrap",
