@@ -28,6 +28,13 @@ git_repository(
     tag = "v1.12.0",
 )
 
+# Import gRPC for C++
+git_repository(
+    name = "com_github_grpc_grpc",
+    remote = "https://github.com/grpc/grpc.git",
+    commit = "17f682d8274ef0b7d1376eeee5e94839a0750e0e",
+)
+
 # Loads Docker for Java rules (e.g. java_image)
 load(
     "@io_bazel_rules_docker//java:image.bzl",
@@ -57,6 +64,11 @@ load(
 )
 
 _go_image_repos()
+
+# Loads C++ gRPC rules for Bazel
+load("@com_github_grpc_grpc//:bazel/grpc_deps.bzl", "grpc_deps")
+
+grpc_deps()
 
 # Loads Gazelle tool
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies", "go_repository")

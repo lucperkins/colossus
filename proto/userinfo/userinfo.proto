@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package userinfo;
+
+message UserInfoRequest {
+    string username = 1;
+}
+
+message UserInfoResponse {
+    map<string, string> user_info = 1;
+}
+
+service DataService {
+    rpc Get(UserInfoRequest) returns (UserInfoResponse) {}
+}
