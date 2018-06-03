@@ -1,6 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
 load("@bazel_gazelle//:def.bzl", "gazelle")
+load("@io_bazel_rules_docker//docker:docker.bzl", "docker_push")
 load("@io_bazel_rules_docker//go:image.bzl", "go_image")
 load("@io_bazel_rules_docker//java:image.bzl", "java_image")
 
@@ -30,4 +31,25 @@ java_image(
     name = "colossus-data",
     main_class = "colossus.DataHandler",
     runtime_deps = ["//data:data_java_lib"],
+)
+
+docker_push(
+    name = "colossus-web-push",
+    image = ":colossus-web",
+    registry = "localhost:5000",
+    repository = "colossus/web",
+)
+
+docker_push(
+    name = "colossus-auth-push",
+    image = ":colossus-auth",
+    registry = "localhost:5000",
+    repository = "colossus/auth",
+)
+
+docker_push(
+    name = "colossus-data-push",
+    image = ":colossus-data",
+    registry = "localhost:5000",
+    repository = "colossus/data",
 )

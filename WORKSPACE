@@ -72,8 +72,8 @@ gazelle_dependencies()
 
 # Loads Docker container rules (for Kubernetes)
 load(
-  "@io_bazel_rules_docker//container:container.bzl",
-  container_repositories = "repositories",
+    "@io_bazel_rules_docker//container:container.bzl",
+    container_repositories = "repositories",
 )
 
 container_repositories()

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: colossus-data
-          image: bazel:colossus-data
+          image: colossus/data
           imagePullPolicy: Never
           ports:
             - containerPort: 1111
@@ -52,7 +52,7 @@ spec:
     spec:
       containers:
         - name: colossus-auth
-          image: bazel:colossus-auth
+          image: colossus/auth
           imagePullPolicy: Never
           ports:
             - containerPort: 8888
@@ -88,7 +88,7 @@ spec:
     spec:
       containers:
         - name: colossus-web
-          image: bazel:colossus-web
+          image: colossus/web
           imagePullPolicy: Never
           ports:
             - containerPort: 3000

@@ -26,9 +26,9 @@ minikube-setup:
 	minikube addons enable ingress
 
 docker-local-push: gazelle
-	$(BAZEL) run //:colossus-web -- --norun
-	$(BAZEL) run //:colossus-auth -- --norun
-	$(BAZEL) run //:colossus-data -- --norun
+	$(BAZEL) run //:colossus-web-push
+	$(BAZEL) run //:colossus-auth-push
+	$(BAZEL) run //:colossus-data-push
 
 k8s-redis-deploy:
 	$(KCTL) apply -f k8s/redis.yaml
