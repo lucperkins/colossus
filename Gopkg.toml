@@ -34,9 +34,5 @@
   version = "3.3.2"
 
 [[constraint]]
-  name = "github.com/go-chi/render"
-  version = "3.3.2"
-
-[[constraint]]
   name = "github.com/go-redis/redis"
   version = "6.11.0"
