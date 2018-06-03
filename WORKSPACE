@@ -28,6 +28,13 @@ git_repository(
     tag = "v1.12.0",
 )
 
+# Imports Kubernetes rules
+git_repository(
+    name = "io_bazel_rules_k8s",
+    remote = "https://github.com/bazelbuild/rules_k8s.git",
+    commit = "8537afcc8728e5ebfafa9b68462e54a98935d06b",
+)
+
 # Loads Docker for Java rules (e.g. java_image)
 load(
     "@io_bazel_rules_docker//java:image.bzl",
@@ -62,6 +69,19 @@ _go_image_repos()
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies", "go_repository")
 
 gazelle_dependencies()
+
+# Loads Docker container rules (for Kubernetes)
+load(
+  "@io_bazel_rules_docker//container:container.bzl",
+  container_repositories = "repositories",
+)
+
+container_repositories()
+
+# Loads Kubernetes rules
+load("@io_bazel_rules_k8s//k8s:k8s.bzl", "k8s_repositories")
+
+k8s_repositories()
 
 # gRPC for Java dependencies (shorthand)
 bind(
