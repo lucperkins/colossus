@@ -1,0 +1,5 @@
+startup --batch --host_jvm_args=-XX:-UseParallelGC
+build --show_timestamps --keep_going --jobs 600
+build --color=yes
+query --keep_going
+build:memcheck --strip=never --test_timeout=3600
