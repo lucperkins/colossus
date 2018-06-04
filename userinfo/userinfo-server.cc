@@ -19,6 +19,8 @@ class UserInfoServiceImpl final : public UserInfo::Service {
     Status GetUserInfo(ServerContext* context, const UserInfoRequest* request, UserInfoResponse* response) {
         std::string user_info(request->username());
 
+        std::cout << "Request received for " << user_info << std::endl;
+
         response->set_user_info(user_info);
 
         return Status::OK;

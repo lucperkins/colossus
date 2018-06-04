@@ -168,10 +168,18 @@ func (s *HttpServer) dataHandler(ctx context.Context, requestString string, w ht
 }
 
 func (s *HttpServer) handleUserInfo(w http.ResponseWriter, r *http.Request) {
+	var username string
+
+	if r.Header.Get("Username") == "" {
+		username = "NONE"
+	} else {
+		username = r.Header.Get("Username")
+	}
+
 	ctx := r.Context()
 
 	req := &userinfo.UserInfoRequest{
-		Username: "some-generic-username",
+		Username: username,
 	}
 
 	res, err := s.userInfoClient.GetUserInfo(ctx, req)
@@ -180,7 +188,7 @@ func (s *HttpServer) handleUserInfo(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	
+
 	userInfo := res.UserInfo
 
 	w.WriteHeader(http.StatusOK)
@@ -207,12 +215,13 @@ func main() {
 	log.Print("Established connection with data service")
 
 	userInfoConn, err := grpc.Dial(
-		fmt.Sprintf("colossus-userinfo-svc:%d", USERINFO_SERVICE_PORT, grpc.WithInsecure())
-	)
+		fmt.Sprintf("localhost:%d", USERINFO_SERVICE_PORT), grpc.WithInsecure())
 
 	if err != nil {
 		panic(err)
 	}
+
+	log.Print("Established connection with userinfo service")
 
 	authClient := auth.NewAuthServiceClient(authConn)
 	dataClient := data.NewDataServiceClient(dataConn)
@@ -223,15 +232,15 @@ func main() {
 	renderer := render.New(render.Options{})
 
 	server := HttpServer{
-		authClient: authClient,
-		dataClient: dataClient,
-		renderer:   renderer,
+		authClient:     authClient,
+		dataClient:     dataClient,
+		renderer:       renderer,
 		userInfoClient: userInfoClient,
 	}
 
 	log.Print("Using the following middleware: authentication")
 
-	r.Use(server.authenticate)
+	//r.Use(server.authenticate)
 
 	r.Post("/string", server.handleString)
 
