@@ -29,6 +29,7 @@ docker-local-push: gazelle
 	$(BAZEL) run //:colossus-web -- --norun
 	$(BAZEL) run //:colossus-auth -- --norun
 	$(BAZEL) run //:colossus-data -- --norun
+	$(BAZEL) run //:colossus-userinfo -- --norun
 
 k8s-redis-deploy:
 	$(KCTL) apply -f k8s/redis.yaml

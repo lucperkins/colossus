@@ -8,6 +8,7 @@ go_library(
     deps = [
         "//proto/auth:go_default_library",
         "//proto/data:go_default_library",
+        "//proto/userinfo:go_default_library",
         "@com_github_go_chi_chi//:go_default_library",
         "@com_github_unrolled_render//:go_default_library",
         "@org_golang_google_grpc//:go_default_library",

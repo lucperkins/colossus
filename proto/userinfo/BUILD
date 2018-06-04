@@ -5,6 +5,14 @@ proto_library(
     srcs = ["userinfo.proto"],
 )
 
+go_proto_library(
+    name = "userinfo_go_proto",
+    compilers = ["@io_bazel_rules_go//proto:go_grpc"],
+    importpath = "github.com/lucperkins/colossus/proto/userinfo",
+    proto = ":userinfo_proto",
+    visibility = ["//visibility:public"],
+)
+
 cc_proto_library(
     name = "userinfo_cc_proto",
     deps = [":userinfo_proto"],

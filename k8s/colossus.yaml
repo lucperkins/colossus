@@ -73,6 +73,42 @@ spec:
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
+  name: colossus-userinfo-deployment
+  labels:
+    app: colossus
+spec:
+  selector:
+    matchLabels:
+      app: colossus
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: colossus
+    spec:
+      containers:
+        - name: colossus-userinfo
+          image: bazel:colossus-userinfo
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 7777
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: colossus-userinfo-svc
+spec:
+  selector:
+    app: colossus
+  ports:
+    - name: http
+      protocol: TCP
+      port: 7777
+      targetPort: 7777
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
   name: colossus-web-deployment
   labels:
     app: colossus

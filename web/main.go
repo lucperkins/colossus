@@ -11,20 +11,23 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/lucperkins/colossus/proto/auth"
 	"github.com/lucperkins/colossus/proto/data"
+	"github.com/lucperkins/colossus/proto/userinfo"
 	"github.com/unrolled/render"
 	"google.golang.org/grpc"
 )
 
 const (
-	PORT              = 3000
-	AUTH_SERVICE_PORT = 8888
-	DATA_SERVICE_PORT = 1111
+	PORT                  = 3000
+	AUTH_SERVICE_PORT     = 8888
+	DATA_SERVICE_PORT     = 1111
+	USERINFO_SERVICE_PORT = 7777
 )
 
 type HttpServer struct {
-	authClient auth.AuthServiceClient
-	dataClient data.DataServiceClient
-	renderer   *render.Render
+	authClient     auth.AuthServiceClient
+	dataClient     data.DataServiceClient
+	renderer       *render.Render
+	userInfoClient userinfo.UserInfoClient
 }
 
 func (s *HttpServer) authenticate(next http.Handler) http.Handler {
@@ -154,7 +157,7 @@ func (s *HttpServer) dataHandler(ctx context.Context, requestString string, w ht
 	res, err := s.dataClient.Get(ctx, req)
 
 	if err != nil {
-		http.Error(w, "", http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -162,6 +165,26 @@ func (s *HttpServer) dataHandler(ctx context.Context, requestString string, w ht
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(value))
+}
+
+func (s *HttpServer) handleUserInfo(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	req := &userinfo.UserInfoRequest{
+		Username: "some-generic-username",
+	}
+
+	res, err := s.userInfoClient.GetUserInfo(ctx, req)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	
+	userInfo := res.UserInfo
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(userInfo))
 }
 
 func main() {
@@ -183,8 +206,17 @@ func main() {
 
 	log.Print("Established connection with data service")
 
+	userInfoConn, err := grpc.Dial(
+		fmt.Sprintf("colossus-userinfo-svc:%d", USERINFO_SERVICE_PORT, grpc.WithInsecure())
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
 	authClient := auth.NewAuthServiceClient(authConn)
 	dataClient := data.NewDataServiceClient(dataConn)
+	userInfoClient := userinfo.NewUserInfoClient(userInfoConn)
 
 	r := chi.NewRouter()
 
@@ -194,6 +226,7 @@ func main() {
 		authClient: authClient,
 		dataClient: dataClient,
 		renderer:   renderer,
+		userInfoClient: userInfoClient,
 	}
 
 	log.Print("Using the following middleware: authentication")
@@ -205,6 +238,8 @@ func main() {
 	r.Get("/stream", server.handleStream)
 
 	r.Put("/stream", server.handlePut)
+
+	r.Get("/user", server.handleUserInfo)
 
 	log.Printf("Now starting the server on port %d...", PORT)
 
