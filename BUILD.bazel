@@ -33,7 +33,8 @@ java_image(
     runtime_deps = ["//data:data_java_lib"],
 )
 
+# A Docker image for the userinfo C++ service
 cc_image(
     name = "colossus-userinfo",
-    binary = "//userinfo:userinfo_cc_bin",
+    binary = "//userinfo:userinfo-bin",
 )

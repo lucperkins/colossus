@@ -8,6 +8,7 @@ proto_library(
 cc_proto_library(
     name = "userinfo_cc_proto",
     deps = [":userinfo_proto"],
+    visibility = ["//visibility:public"],
 )
 
 cc_grpc_library(

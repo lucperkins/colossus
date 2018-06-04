@@ -70,6 +70,14 @@ load("@com_github_grpc_grpc//:bazel/grpc_deps.bzl", "grpc_deps")
 
 grpc_deps()
 
+# Loads C++ Docker image rules
+load(
+    "@io_bazel_rules_docker//cc:image.bzl",
+    _cc_image_repos = "repositories",
+)
+
+_cc_image_repos()
+
 # Loads Gazelle tool
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies", "go_repository")
 

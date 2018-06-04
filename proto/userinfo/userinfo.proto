@@ -10,6 +10,6 @@ message UserInfoResponse {
     string user_info = 1;
 }
 
-service UserInfoService {
+service UserInfo {
     rpc GetUserInfo(UserInfoRequest) returns (UserInfoResponse) {}
 }
