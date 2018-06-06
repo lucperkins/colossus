@@ -58,10 +58,10 @@ func (h *authHandler) Authenticate(ctx context.Context, req *auth.AuthRequest) (
 	authenticated = password == value
 
 	if authenticated {
-		log.Printf("Password %s failed", password)
+		log.Printf("Password %s succeeded", password)
 		authCounter.Inc()
 	} else {
-		log.Printf("Password %s succeeded", password)
+		log.Printf("Password %s failed", password)
 		failCounter.Inc()
 	}
 
