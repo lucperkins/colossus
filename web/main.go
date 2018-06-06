@@ -48,6 +48,11 @@ func (s *HttpServer) PrometheusMetrics(next http.Handler) http.Handler {
 
 func (s *HttpServer) authenticate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.RequestURI == "/metrics" {
+			next.ServeHTTP(w, r)
+			return
+		}
+
 		ctx := r.Context()
 
 		password := r.Header.Get("Password")
@@ -213,7 +218,7 @@ func (s *HttpServer) handleUserInfo(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	authConn, err := grpc.Dial(
-		fmt.Sprintf("colossus-auth-svc:%d", AUTH_SERVICE_PORT), grpc.WithInsecure())
+		fmt.Sprintf("localhost:%d", AUTH_SERVICE_PORT), grpc.WithInsecure())
 
 	if err != nil {
 		panic(err)
@@ -274,7 +279,7 @@ func main() {
 	r.Use(server.PrometheusMetrics)
 
 	// The authentication layer
-	//r.Use(server.authenticate)
+	r.Use(server.authenticate)
 
 	r.Post("/string", server.handleString)
 

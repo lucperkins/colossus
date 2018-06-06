@@ -1,14 +1,16 @@
 package main
 
 import (
-	"github.com/prometheus/client_golang/prometheus"
 	"context"
 	"fmt"
 	"log"
 	"net"
+	"net/http"
 
 	"github.com/go-redis/redis"
 	"github.com/grpc-ecosystem/go-grpc-prometheus"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
 
 	"github.com/lucperkins/colossus/proto/auth"
@@ -31,7 +33,7 @@ var (
 	})
 
 	failCounter = prometheus.NewCounter(prometheus.CounterOpts{
-		Name; "auth_svc_fail",
+		Name: "auth_svc_fail",
 		Help: "Auth fail counter",
 	})
 )
@@ -56,8 +58,10 @@ func (h *authHandler) Authenticate(ctx context.Context, req *auth.AuthRequest) (
 	authenticated = password == value
 
 	if authenticated {
+		log.Printf("Password %s failed", password)
 		authCounter.Inc()
 	} else {
+		log.Printf("Password %s succeeded", password)
 		failCounter.Inc()
 	}
 
@@ -68,7 +72,8 @@ func main() {
 	log.Printf("Starting up the gRPC auth server on localhost:%d", PORT)
 
 	redisClient := redis.NewClient(&redis.Options{
-		Addr: "colossus-redis-cluster:6379",
+		//Addr: "colossus-redis-cluster:6379",
+		Addr: "localhost:6379",
 	})
 
 	_, err := redisClient.Ping().Result()
@@ -85,10 +90,10 @@ func main() {
 		log.Fatalf("Failed to listen: %v", err)
 	}
 
+	log.Print("Successfully created TCP listener")
+
 	server := grpc.NewServer(
-		grpc.UnaryInterceptor(
-			grpc_prometheus.UnaryServerInterceptor,
-		)
+		grpc.UnaryInterceptor(grpc_prometheus.UnaryServerInterceptor),
 	)
 
 	authServer := authHandler{
@@ -97,21 +102,24 @@ func main() {
 
 	httpServer := &http.Server{
 		Handler: promhttp.HandlerFor(metricsRegistry, promhttp.HandlerOpts{}),
-		Addr: fmt.Sprintf("0.0.0.0:%d", PROMETHEUS_PORT),
+		Addr:    fmt.Sprintf("0.0.0.0:%d", PROMETHEUS_PORT),
 	}
 
 	auth.RegisterAuthServiceServer(server, &authServer)
 
 	grpcMetrics.InitializeMetrics(server)
 
-	metricsRegistry.MustRegister(grpcMetrics, authCounter)
-	metricsRegistry.MustRegister(grpcMetrics, failCounter)
+	metricsRegistry.MustRegister(grpcMetrics, authCounter, failCounter)
+
+	log.Print("Successfully registered with Prometheus")
 
 	go func() {
+		log.Print("Starting up HTTP server for Prometheus metrics collection")
+
 		if err := httpServer.ListenAndServe(); err != nil {
 			log.Fatalf("Unable to start HTTP server for Prometheus metrics: %v", err)
 		}
-	}
+	}()
 
 	log.Fatal(server.Serve(listener))
 }
