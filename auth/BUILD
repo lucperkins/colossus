@@ -8,6 +8,8 @@ go_library(
     deps = [
         "//proto/auth:go_default_library",
         "@com_github_go_redis_redis//:go_default_library",
+        "@com_github_grpc_ecosystem_go_grpc_prometheus//:go_default_library",
+        "@com_github_prometheus_client_golang//prometheus:go_default_library",
         "@org_golang_google_grpc//:go_default_library",
     ],
 )

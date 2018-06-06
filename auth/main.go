@@ -1,12 +1,14 @@
 package main
 
 import (
+	"github.com/prometheus/client_golang/prometheus"
 	"context"
 	"fmt"
 	"log"
 	"net"
 
 	"github.com/go-redis/redis"
+	"github.com/grpc-ecosystem/go-grpc-prometheus"
 	"google.golang.org/grpc"
 
 	"github.com/lucperkins/colossus/proto/auth"
@@ -14,6 +16,24 @@ import (
 
 const (
 	PORT = 8888
+
+	PROMETHEUS_PORT = 9092
+)
+
+var (
+	metricsRegistry = prometheus.NewRegistry()
+
+	grpcMetrics = grpc_prometheus.NewServerMetrics()
+
+	authCounter = prometheus.NewCounter(prometheus.CounterOpts{
+		Name: "auth_svc_success",
+		Help: "Auth success counter",
+	})
+
+	failCounter = prometheus.NewCounter(prometheus.CounterOpts{
+		Name; "auth_svc_fail",
+		Help: "Auth fail counter",
+	})
 )
 
 type authHandler struct {
@@ -34,6 +54,12 @@ func (h *authHandler) Authenticate(ctx context.Context, req *auth.AuthRequest) (
 	}
 
 	authenticated = password == value
+
+	if authenticated {
+		authCounter.Inc()
+	} else {
+		failCounter.Inc()
+	}
 
 	return &auth.AuthResponse{Authenticated: authenticated}, nil
 }
@@ -59,13 +85,33 @@ func main() {
 		log.Fatalf("Failed to listen: %v", err)
 	}
 
-	server := grpc.NewServer()
+	server := grpc.NewServer(
+		grpc.UnaryInterceptor(
+			grpc_prometheus.UnaryServerInterceptor,
+		)
+	)
 
 	authServer := authHandler{
 		redisClient: redisClient,
 	}
 
+	httpServer := &http.Server{
+		Handler: promhttp.HandlerFor(metricsRegistry, promhttp.HandlerOpts{}),
+		Addr: fmt.Sprintf("0.0.0.0:%d", PROMETHEUS_PORT),
+	}
+
 	auth.RegisterAuthServiceServer(server, &authServer)
 
-	server.Serve(listener)
+	grpcMetrics.InitializeMetrics(server)
+
+	metricsRegistry.MustRegister(grpcMetrics, authCounter)
+	metricsRegistry.MustRegister(grpcMetrics, failCounter)
+
+	go func() {
+		if err := httpServer.ListenAndServe(); err != nil {
+			log.Fatalf("Unable to start HTTP server for Prometheus metrics: %v", err)
+		}
+	}
+
+	log.Fatal(server.Serve(listener))
 }

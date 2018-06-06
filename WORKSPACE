@@ -291,3 +291,9 @@ go_repository(
     commit = "94663424ae5ae9856b40a9f170762b4197024661",
     importpath = "github.com/prometheus/procfs",
 )
+
+go_repository(
+    name = "com_github_grpc_ecosystem_go_grpc_prometheus",
+    commit = "c225b8c3b01faf2899099b768856a9e916e5087b",
+    importpath = "github.com/grpc-ecosystem/go-grpc-prometheus",
+)
