@@ -6,12 +6,15 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	"github.com/lucperkins/colossus/proto/auth"
 	"github.com/lucperkins/colossus/proto/data"
 	"github.com/lucperkins/colossus/proto/userinfo"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/unrolled/render"
 	"google.golang.org/grpc"
 )
@@ -28,6 +31,19 @@ type HttpServer struct {
 	dataClient     data.DataServiceClient
 	renderer       *render.Render
 	userInfoClient userinfo.UserInfoClient
+	httpReqs       *prometheus.CounterVec
+}
+
+func (s *HttpServer) PrometheusMetrics(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
+
+		next.ServeHTTP(ww, r)
+
+		if r.RequestURI != "/metrics" {
+			s.httpReqs.WithLabelValues(http.StatusText(ww.Status()), strings.ToLower(r.Method), r.URL.Path).Inc()
+		}
+	})
 }
 
 func (s *HttpServer) authenticate(next http.Handler) http.Handler {
@@ -231,15 +247,33 @@ func main() {
 
 	renderer := render.New(render.Options{})
 
+	httpReqs := prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name:        "web_svc_request_info",
+			Help:        "HTTP request counter by response code, request method, and request path",
+			ConstLabels: prometheus.Labels{"service": "colossus-web"},
+		},
+		[]string{"code", "method", "path"},
+	)
+
+	if err := prometheus.Register(httpReqs); err != nil {
+		log.Fatalf("Could not register Prometheus httpReqs counter vec: %v", err)
+	}
+
 	server := HttpServer{
 		authClient:     authClient,
 		dataClient:     dataClient,
 		renderer:       renderer,
 		userInfoClient: userInfoClient,
+		httpReqs:       httpReqs,
 	}
 
 	log.Print("Using the following middleware: authentication")
 
+	// The Prometheus metrics middleware
+	r.Use(server.PrometheusMetrics)
+
+	// The authentication layer
 	//r.Use(server.authenticate)
 
 	r.Post("/string", server.handleString)
@@ -249,6 +283,9 @@ func main() {
 	r.Put("/stream", server.handlePut)
 
 	r.Get("/user", server.handleUserInfo)
+
+	// The Prometheus metrics handler
+	r.Handle("/metrics", prometheus.Handler())
 
 	log.Printf("Now starting the server on port %d...", PORT)
 
