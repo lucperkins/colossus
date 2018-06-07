@@ -14,6 +14,7 @@ Service | Where the code lives | Language
 An HTTP service that takes web requests. This is the entry point into the backend services. | [`web`](web) | Go
 An authentication/authorization service | [`auth`](auth) | Go
 A "data" service that handles data requests | [`data`](data) | Java
+A "user info" service that doesn't do anything interesting yet, but it works and it's in C++! | [`userinfo`](userinfo) | C++
 
 ## Help me out!
 
