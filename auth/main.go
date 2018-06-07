@@ -71,9 +71,10 @@ func (h *authHandler) Authenticate(ctx context.Context, req *auth.AuthRequest) (
 func main() {
 	log.Printf("Starting up the gRPC auth server on localhost:%d", PORT)
 
+	log.Print("Attempting to connect to Redis")
+
 	redisClient := redis.NewClient(&redis.Options{
-		//Addr: "colossus-redis-cluster:6379",
-		Addr: "localhost:6379",
+		Addr: "colossus-redis-cluster:6379",
 	})
 
 	_, err := redisClient.Ping().Result()

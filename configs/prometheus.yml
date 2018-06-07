@@ -4,7 +4,7 @@ global:
 scrape_configs:
   - job_name: 'web'
     static_configs:
-      - targets: ['localhost:3000']
+      - targets: ['colossus-web-svc:3000']
   - job_name: 'auth'
     static_configs:
-      - targets: ['localhost:1111']
+      - targets: ['colossus-auth-svc:9092']
