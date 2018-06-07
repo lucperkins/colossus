@@ -37,6 +37,9 @@ k8s-redis-deploy:
 k8s-colossus-deploy:
 	$(KCTL) apply -f k8s/colossus.yaml
 
+k8s-monitoring-deploy:
+	$(KCTL) apply -f k8s/monitoring.yaml
+
 redis-set-password:
 	$(REDIS_CLI_EXEC) SET password tonydanza
 

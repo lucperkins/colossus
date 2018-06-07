@@ -178,6 +178,23 @@ $ curl -i -XPOST -H Password:somethingelse -H String:"This should work now" $MIN
 
 Success 😎.
 
+## Monitoring with Prometheus and Grafana
+
+Create a config map for Prometheus using the [`prometheus.yml`](configs/prometheus.yml) configuration file:
+
+```bash
+$ kubectl create configmap prometheus-config --from-file=configs/prometheus.yml
+```
+
+That file contains the proper configs to make Prometheus periodically scrape metrics from the web and auth services. Once the config has been uploaded, you can start up both Prometheus and Grafana in the Kubernetes cluster:
+
+```bash
+$ kubectl apply -f k8s/monitoring.yaml
+
+# Alternative
+$ make k8s-monitoring-deploy
+```
+
 ## What's next
 
 This is a humble start but I'd like to expand it a great deal in the future. In particular I'd like to add:

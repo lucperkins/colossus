@@ -1,0 +1,82 @@
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: prometheus
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: colossus
+        component: prometheus
+    spec:
+      containers:
+      - name: prometheus
+        image: prom/prometheus:v2.2.1
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/prometheus
+        - name: data-volume
+          mountPath: /prometheus
+        ports:
+        - containerPort: 9090
+      volumes:
+      - name: config-volume
+        configMap:
+          name: prometheus-config
+      - name: data-volume
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  labels:
+    app: colossus
+    component: prometheus
+spec:
+  ports:
+  - port: 9090
+    name: server
+  clusterIP: None
+  selector:
+    app: colossus
+    component: prometheus
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: grafana
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: colossus
+        component: prometheus
+    spec:
+      containers:
+      - name: grafana
+        image: grafana/grafana:v5.1.0
+      ports:
+      - containerPort:
+      env:
+      - name: PROMETHEUS_URL
+        value: http://prometheus:9090/
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  labels:
+    app: colossus
+    component: grafana
+spec:
+  ports:
+  - containerPort: 3000
+    name: server
+  clusterIP: None
+  selector:
+    app: colossus
+    component: grafana
