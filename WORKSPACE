@@ -83,6 +83,12 @@ load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies", "go_repository")
 
 gazelle_dependencies()
 
+# Java dependencies
+maven_jar(
+    name = "io_prometheus_simpleclient",
+    artifact = "io.prometheus:simpleclient:0.4.0",
+)
+
 # gRPC for Java dependencies (shorthand)
 bind(
     name = "grpc-core",

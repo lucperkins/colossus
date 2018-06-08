@@ -216,6 +216,17 @@ func (s *HttpServer) handleUserInfo(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(userInfo))
 }
 
+func prometheusWebCounter() *prometheus.Counter {
+	return prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name:        "web_svc_request_info",
+			Help:        "HTTP request counter by response code, request method, and request path",
+			ConstLabels: prometheus.Labels{"service": "colossus-web"},
+		},
+		[]string{"code", "method", "path"},
+	)
+}
+
 func main() {
 	authConn, err := grpc.Dial(
 		fmt.Sprintf("localhost:%d", AUTH_SERVICE_PORT), grpc.WithInsecure())
@@ -252,14 +263,7 @@ func main() {
 
 	renderer := render.New(render.Options{})
 
-	httpReqs := prometheus.NewCounterVec(
-		prometheus.CounterOpts{
-			Name:        "web_svc_request_info",
-			Help:        "HTTP request counter by response code, request method, and request path",
-			ConstLabels: prometheus.Labels{"service": "colossus-web"},
-		},
-		[]string{"code", "method", "path"},
-	)
+	httpReqs := prometheusWebCounter()
 
 	if err := prometheus.Register(httpReqs); err != nil {
 		log.Fatalf("Could not register Prometheus httpReqs counter vec: %v", err)
