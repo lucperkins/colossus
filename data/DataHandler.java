@@ -6,6 +6,7 @@ import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
 import io.prometheus.client.Counter;
+import io.prometheus.client.exporter.HTTPServer;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,7 +28,8 @@ public class DataHandler {
             .help("Streaming requests to the data service")
             .register();
 
-    private Server server;
+    private Server grpcServer;
+    private static HTTPServer prometheusHttpServer;
 
     static class StreamingResponder implements StreamObserver<Data.DataRequest> {
         private StreamObserver<Data.DataResponse> observer;
@@ -103,25 +105,25 @@ public class DataHandler {
     }
 
     private void blockUntilShutdown() throws InterruptedException {
-        if (server != null) {
-            server.awaitTermination();
+        if (grpcServer != null) {
+            grpcServer.awaitTermination();
         }
     }
 
     private void stop() {
-        if (server != null) server.shutdown();
+        if (grpcServer != null) grpcServer.shutdown();
     }
 
     private void shutdownHook() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            LOG.info("Shutting down gRPC data server due to JVM shutdown");
+            LOG.info("Shutting down gRPC data grpcServer due to JVM shutdown");
             DataHandler.this.stop();
             LOG.info("Server successfully shut down");
         }));
     }
 
     private void start() throws IOException {
-        server = ServerBuilder.forPort(PORT)
+        grpcServer = ServerBuilder.forPort(PORT)
             .addService(new DataImpl())
             .build()
             .start();
@@ -130,9 +132,17 @@ public class DataHandler {
     }
 
     public static void main(String[] args) throws InterruptedException, IOException {
-        LOG.info(String.format("Starting up gRPC data server on port %d", PORT));
-        final DataHandler server = new DataHandler();
-        server.start();
-        server.blockUntilShutdown();
+        LOG.info(String.format("Starting up gRPC data grpcServer on port %d", PORT));
+        final DataHandler handler = new DataHandler();
+
+        try {
+            prometheusHttpServer = new HTTPServer(9092);
+        } catch (IOException e) {
+            LOG.severe("Could not start Prometheus HTTP server");
+            System.exit(1);
+        }
+
+        handler.start();
+        handler.blockUntilShutdown();
     }
 }

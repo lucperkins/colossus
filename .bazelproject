@@ -10,4 +10,4 @@ directories:
   -k8s
 
 targets:
-  //...
+  //data:all

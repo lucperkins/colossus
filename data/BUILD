@@ -4,6 +4,7 @@ java_library(
     visibility = ["//visibility:public"],
     deps = [
         "@io_prometheus_simpleclient//jar",
+        "@io_prometheus_simpleclient_httpserver//jar",
         "//external:grpc-core",
         "//external:grpc-netty",
         "//external:grpc-stub",

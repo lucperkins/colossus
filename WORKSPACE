@@ -89,6 +89,11 @@ maven_jar(
     artifact = "io.prometheus:simpleclient:0.4.0",
 )
 
+maven_jar(
+    name = "io_prometheus_simpleclient_httpserver",
+    artifact = "io.prometheus:simpleclient_httpserver:0.4.0",
+)
+
 # gRPC for Java dependencies (shorthand)
 bind(
     name = "grpc-core",
