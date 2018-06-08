@@ -1,0 +1,17 @@
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+    compile(
+        "io.prometheus:simpleclient:0.4.0",
+        "io.prometheus:simpleclient_httpserver:0.4.0",
+        "me.dinowernli:java-grpc-prometheus:0.3.0"
+    )
+}
