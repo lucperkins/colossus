@@ -136,7 +136,9 @@ public class DataHandler {
         final DataHandler handler = new DataHandler();
 
         try {
+            LOG.info("Starting Prometheus HTTP server");
             prometheusHttpServer = new HTTPServer(9092);
+            LOG.info("Successfully started Prometheus HTTP server");
         } catch (IOException e) {
             LOG.severe("Could not start Prometheus HTTP server");
             System.exit(1);
