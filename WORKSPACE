@@ -35,6 +35,26 @@ git_repository(
     commit = "17f682d8274ef0b7d1376eeee5e94839a0750e0e",
 )
 
+# Import Maven rules for Gradle conversion
+git_repository(
+  name = "org_pubref_rules_maven",
+  remote = "https://github.com/pubref/rules_maven",
+  commit = "9c3b07a6d9b195a1192aea3cd78afd1f66c80710",
+)
+
+# Loads Maven rules
+load("@org_pubref_rules_maven//maven:rules.bzl", "maven_repositories", "maven_repository")
+maven_repositories()
+
+maven_repository(
+    name = "artifact_repo",
+    gradle_build_file = "//:build.gradle",
+    hermetic = False,
+)
+
+load("@artifact_repo//:rules.bzl", "artifact_repo_runtime")
+artifact_repo_runtime()
+
 # Loads Docker for Java rules (e.g. java_image)
 load(
     "@io_bazel_rules_docker//java:image.bzl",
@@ -82,17 +102,6 @@ _cc_image_repos()
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies", "go_repository")
 
 gazelle_dependencies()
-
-# Java dependencies
-maven_jar(
-    name = "io_prometheus_simpleclient",
-    artifact = "io.prometheus:simpleclient:0.4.0",
-)
-
-maven_jar(
-    name = "io_prometheus_simpleclient_httpserver",
-    artifact = "io.prometheus:simpleclient_httpserver:0.4.0",
-)
 
 # gRPC for Java dependencies (shorthand)
 bind(

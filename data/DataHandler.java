@@ -119,6 +119,8 @@ public class DataHandler {
             LOG.info("Shutting down gRPC data grpcServer due to JVM shutdown");
             DataHandler.this.stop();
             LOG.info("Server successfully shut down");
+            prometheusHttpServer.stop();
+            LOG.info("Prometheus metrics HTTP server successfully shut down");
         }));
     }
 

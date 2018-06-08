@@ -3,8 +3,7 @@ java_library(
     srcs = ["DataHandler.java"],
     visibility = ["//visibility:public"],
     deps = [
-        "@io_prometheus_simpleclient//jar",
-        "@io_prometheus_simpleclient_httpserver//jar",
+        "@artifact_repo//:runtime",
         "//external:grpc-core",
         "//external:grpc-netty",
         "//external:grpc-stub",
