@@ -5,6 +5,7 @@ import colossus.data.DataServiceGrpc;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
+import io.prometheus.client.Counter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,6 +16,16 @@ import java.util.stream.IntStream;
 public class DataHandler {
     private static final Logger LOG = Logger.getLogger(DataHandler.class.getName());
     private static final int PORT = 1111;
+    private static final Counter syncRequests = Counter.build()
+            .name("data_svc_sync_requests")
+            .help("Sync requests to the data service")
+            .labelNames("request_key")
+            .register();
+
+    private static final Counter streamingRequests = Counter.build()
+            .name("data_svc_streaming_requests")
+            .help("Streaming requests to the data service")
+            .register();
 
     private Server server;
 
@@ -60,6 +71,9 @@ public class DataHandler {
             Data.DataResponse res = Data.DataResponse.newBuilder()
                     .setValue(computedValue)
                     .build();
+
+            syncRequests.labels(request).inc();
+
             resObserver.onNext(res);
             resObserver.onCompleted();
         }
@@ -72,6 +86,9 @@ public class DataHandler {
 
             IntStream.range(0, 10).forEach(i -> {
                 String value = String.format("Response %d", i);
+
+                streamingRequests.inc();
+
                 resObserver.onNext(resBldr.setValue(value).build());
             });
 
