@@ -1,0 +1,13 @@
+workspace_type: java
+
+java_language_level: 8
+
+shard_sync: true
+
+directories:
+  .
+  -configs
+  -k8s
+
+targets:
+  //...
