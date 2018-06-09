@@ -2,8 +2,11 @@ package(default_visibility = ["//visibility:public"])
 
 load("@bazel_gazelle//:def.bzl", "gazelle")
 load("@io_bazel_rules_docker//cc:image.bzl", "cc_image")
+load("@io_bazel_rules_docker//docker:docker.bzl", "docker_push")
 load("@io_bazel_rules_docker//go:image.bzl", "go_image")
 load("@io_bazel_rules_docker//java:image.bzl", "java_image")
+
+DOCKER_REGISTRY_URL = "localhost:5000"
 
 # A Gazelle executable for auto-generating Go BUILD definitions
 gazelle(
@@ -37,4 +40,40 @@ java_image(
 cc_image(
     name = "colossus-userinfo",
     binary = "//userinfo:userinfo-bin",
+)
+
+docker_push(
+    name = "auth-push",
+    image = ":colossus-auth",
+    registry = DOCKER_REGISTRY_URL,
+    repository = "colossus/auth",
+    stamp = True,
+    tag = "{BUILD_TIMESTAMP}",
+)
+
+docker_push(
+    name = "web-push",
+    image = ":colossus-web",
+    registry = DOCKER_REGISTRY_URL,
+    repository = "colossus/web",
+    stamp = True,
+    tag = "{BUILD_TIMESTAMP}",
+)
+
+docker_push(
+    name = "data-push",
+    image = ":colossus-data",
+    registry = DOCKER_REGISTRY_URL,
+    repository = "colossus/data",
+    stamp = True,
+    tag = "{BUILD_TIMESTAMP}",
+)
+
+docker_push(
+    name = "userinfo-push",
+    image = ":colossus-userinfo",
+    registry = DOCKER_REGISTRY_URL,
+    repository = "colossus/userinfo",
+    stamp = True,
+    tag = "{BUILD_TIMESTAMP}",
 )
