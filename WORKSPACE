@@ -37,23 +37,15 @@ git_repository(
 
 # Import Maven rules for Gradle conversion
 git_repository(
-  name = "org_pubref_rules_maven",
-  remote = "https://github.com/pubref/rules_maven",
-  commit = "9c3b07a6d9b195a1192aea3cd78afd1f66c80710",
+    name = "org_pubref_rules_maven",
+    remote = "https://github.com/pubref/rules_maven",
+    commit = "9c3b07a6d9b195a1192aea3cd78afd1f66c80710",
 )
 
 # Loads Maven rules
 load("@org_pubref_rules_maven//maven:rules.bzl", "maven_repositories", "maven_repository")
+
 maven_repositories()
-
-maven_repository(
-    name = "artifact_repo",
-    gradle_build_file = "//:build.gradle",
-    hermetic = False,
-)
-
-load("@artifact_repo//:rules.bzl", "artifact_repo_runtime")
-artifact_repo_runtime()
 
 # Loads Docker for Java rules (e.g. java_image)
 load(
@@ -118,6 +110,17 @@ bind(
     name = "grpc-stub",
     actual = "@io_grpc_grpc_java//stub",
 )
+
+# Java depenencies (via Gradle)
+maven_repository(
+    name = "artifact_repo",
+    gradle_build_file = "//:build.gradle",
+    hermetic = False,
+)
+
+load("@artifact_repo//:rules.bzl", "artifact_repo_runtime")
+
+artifact_repo_runtime()
 
 # Gazelle-generated Go dependencies
 go_repository(
