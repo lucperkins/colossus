@@ -8,7 +8,9 @@ java_library(
         "//external:grpc-stub",
         "//proto/data:data_java_grpc",
         "//proto/data:data_java_proto",
-        "@artifact_repo//:runtime",
+        "@io_prometheus_simpleclient//jar",
+        "@io_prometheus_simpleclient_httpserver//jar",
+        "@me_dinowernli_java_grpc_prometheus//jar",
     ],
 )
 

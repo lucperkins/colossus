@@ -1,5 +1,8 @@
 workspace(name = "colossus")
 
+# Versions
+PROMETHEUS_JAVA_VERSION = "0.4.0"
+
 # Imports basic Go rules for Bazel (e.g. go_binary)
 git_repository(
     name = "io_bazel_rules_go",
@@ -111,16 +114,20 @@ bind(
     actual = "@io_grpc_grpc_java//stub",
 )
 
-# Java depenencies (via Gradle)
-maven_repository(
-    name = "artifact_repo",
-    gradle_build_file = "//:build.gradle",
-    hermetic = False,
+maven_jar(
+    name = "io_prometheus_simpleclient",
+    artifact = "io.prometheus:simpleclient:" + PROMETHEUS_JAVA_VERSION,
 )
 
-load("@artifact_repo//:rules.bzl", "artifact_repo_runtime")
+maven_jar(
+    name = "io_prometheus_simpleclient_httpserver",
+    artifact = "io.prometheus:simpleclient_httpserver:" + PROMETHEUS_JAVA_VERSION,
+)
 
-artifact_repo_runtime()
+maven_jar(
+    name = "me_dinowernli_java_grpc_prometheus",
+    artifact = "me.dinowernli:java-grpc-prometheus:0.3.0"
+)
 
 # Gazelle-generated Go dependencies
 go_repository(
