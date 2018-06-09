@@ -4,9 +4,13 @@ import colossus.data.Data;
 import colossus.data.DataServiceGrpc;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import io.grpc.ServerInterceptors;
 import io.grpc.stub.StreamObserver;
+import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Counter;
 import io.prometheus.client.exporter.HTTPServer;
+import me.dinowernli.grpc.prometheus.Configuration;
+import me.dinowernli.grpc.prometheus.MonitoringServerInterceptor;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -125,11 +129,16 @@ public class DataHandler {
     }
 
     private void start() throws IOException {
+        Configuration monitoringConfig = Configuration.cheapMetricsOnly();
+
+        MonitoringServerInterceptor prometheusInterceptor = MonitoringServerInterceptor.create(
+            monitoringConfig.withCollectorRegistry(new CollectorRegistry()));
+
         grpcServer = ServerBuilder.forPort(PORT)
-            .addService(new DataImpl())
+            .addService(ServerInterceptors.intercept(new DataImpl().bindService(), prometheusInterceptor))
             .build()
             .start();
-        LOG.info(String.format("Server successfully started on port %d", PORT));
+        LOG.info(String.format("gRPC server successfully started on port %d", PORT));
         shutdownHook();
     }
 
@@ -140,7 +149,7 @@ public class DataHandler {
         try {
             LOG.info("Starting Prometheus HTTP server");
             prometheusHttpServer = new HTTPServer(9092);
-            LOG.info("Successfully started Prometheus HTTP server");
+            LOG.info("Successfully started Prometheus HTTP server on port 9092");
         } catch (IOException e) {
             LOG.severe("Could not start Prometheus HTTP server");
             System.exit(1);
