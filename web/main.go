@@ -229,7 +229,7 @@ func prometheusWebCounter() *prometheus.CounterVec {
 
 func main() {
 	authConn, err := grpc.Dial(
-		fmt.Sprintf("localhost:%d", AUTH_SERVICE_PORT), grpc.WithInsecure())
+		fmt.Sprintf("colossus-auth-svc:%d", AUTH_SERVICE_PORT), grpc.WithInsecure())
 
 	if err != nil {
 		panic(err)
@@ -247,7 +247,7 @@ func main() {
 	log.Print("Established connection with data service")
 
 	userInfoConn, err := grpc.Dial(
-		fmt.Sprintf("localhost:%d", USERINFO_SERVICE_PORT), grpc.WithInsecure())
+		fmt.Sprintf("colossus-userinfo-svc:%d", USERINFO_SERVICE_PORT), grpc.WithInsecure())
 
 	if err != nil {
 		panic(err)
