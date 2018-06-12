@@ -126,7 +126,7 @@ maven_jar(
 
 maven_jar(
     name = "me_dinowernli_java_grpc_prometheus",
-    artifact = "me.dinowernli:java-grpc-prometheus:0.3.0"
+    artifact = "me.dinowernli:java-grpc-prometheus:0.3.0",
 )
 
 # Gazelle-generated Go dependencies
