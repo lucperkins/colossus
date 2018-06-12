@@ -19,7 +19,7 @@ spec:
           image: bazel:colossus-data
           imagePullPolicy: Never
           ports:
-            - containerPort: 1111
+          - containerPort: 1111
 ---
 apiVersion: v1
 kind: Service
@@ -29,10 +29,10 @@ spec:
   selector:
     app: colossus
   ports:
-    - name: http
-      protocol: TCP
-      port: 1111
-      targetPort: 1111
+  - name: http
+    protocol: TCP
+    port: 1111
+    targetPort: 1111
 ---
 apiVersion: apps/v1beta1
 kind: Deployment

@@ -14,19 +14,41 @@ spec:
       containers:
       - name: prometheus
         image: prom/prometheus:v2.2.1
+        args:
+        - "--config.file=/etc/prometheus/prometheus.yml"
+        ports:
+        - containerPort: 9090
         volumeMounts:
         - name: config-volume
           mountPath: /etc/prometheus
         - name: data-volume
           mountPath: /prometheus
-        ports:
-        - containerPort: 9090
       volumes:
       - name: config-volume
         configMap:
-          name: prometheus-config
+          defaultMode: 420
+          name: prometheus-conf
       - name: data-volume
         emptyDir: {}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-conf
+  labels:
+    name: prometheus-conf
+data:
+  prometheus.yml: |-
+    global:
+      scrape_interval:     5s
+      evaluation_interval: 5s
+    scrape_configs:
+      - job_name: 'web'
+        static_configs:
+          - targets: ['colossus-web-svc:3000']
+      - job_name: 'auth'
+        static_configs:
+          - targets: ['colossus-auth-svc:9092']
 ---
 apiVersion: v1
 kind: Service
@@ -38,6 +60,7 @@ metadata:
 spec:
   ports:
   - port: 9090
+    protocol: TCP
     name: server
   clusterIP: None
   selector:
@@ -58,12 +81,12 @@ spec:
     spec:
       containers:
       - name: grafana
-        image: grafana/grafana:v5.1.0
-      ports:
-      - containerPort:
-      env:
-      - name: PROMETHEUS_URL
-        value: http://prometheus:9090/
+        image: grafana/grafana:5.1.0
+        ports:
+        - containerPort: 3000
+        env:
+        - name: PROMETHEUS_URL
+          value: https://prometheus:9090/
 ---
 apiVersion: v1
 kind: Service
@@ -74,7 +97,8 @@ metadata:
     component: grafana
 spec:
   ports:
-  - containerPort: 3000
+  - port: 3000
+    protocol: TCP
     name: server
   clusterIP: None
   selector:

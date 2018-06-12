@@ -277,7 +277,7 @@ func main() {
 		httpReqs:       httpReqs,
 	}
 
-	log.Print("Using the following middleware: authentication")
+	log.Print("Using the following middleware: Prometheus metrics, authentication")
 
 	// The Prometheus metrics middleware
 	r.Use(server.PrometheusMetrics)
