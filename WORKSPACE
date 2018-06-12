@@ -125,6 +125,11 @@ maven_jar(
 )
 
 maven_jar(
+    name = "io_prometheus_simpleclient_common",
+    artifact = "io.prometheus:simpleclient_common:" + PROMETHEUS_JAVA_VERSION,
+)
+
+maven_jar(
     name = "me_dinowernli_java_grpc_prometheus",
     artifact = "me.dinowernli:java-grpc-prometheus:0.3.0",
 )
