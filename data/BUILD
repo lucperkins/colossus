@@ -9,8 +9,8 @@ java_library(
         "//proto/data:data_java_grpc",
         "//proto/data:data_java_proto",
         "@io_prometheus_simpleclient//jar",
-        "@io_prometheus_simpleclient_httpserver//jar",
         "@io_prometheus_simpleclient_common//jar",
+        "@io_prometheus_simpleclient_httpserver//jar",
         "@me_dinowernli_java_grpc_prometheus//jar",
     ],
 )

@@ -120,13 +120,13 @@ maven_jar(
 )
 
 maven_jar(
-    name = "io_prometheus_simpleclient_httpserver",
-    artifact = "io.prometheus:simpleclient_httpserver:" + PROMETHEUS_JAVA_VERSION,
+    name = "io_prometheus_simpleclient_common",
+    artifact = "io.prometheus:simpleclient_common:" + PROMETHEUS_JAVA_VERSION,
 )
 
 maven_jar(
-    name = "io_prometheus_simpleclient_common",
-    artifact = "io.prometheus:simpleclient_common:" + PROMETHEUS_JAVA_VERSION,
+    name = "io_prometheus_simpleclient_httpserver",
+    artifact = "io.prometheus:simpleclient_httpserver:" + PROMETHEUS_JAVA_VERSION,
 )
 
 maven_jar(
