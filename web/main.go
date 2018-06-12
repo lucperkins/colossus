@@ -216,7 +216,7 @@ func (s *HttpServer) handleUserInfo(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(userInfo))
 }
 
-func prometheusWebCounter() *prometheus.Counter {
+func prometheusWebCounter() *prometheus.CounterVec {
 	return prometheus.NewCounterVec(
 		prometheus.CounterOpts{
 			Name:        "web_svc_request_info",
