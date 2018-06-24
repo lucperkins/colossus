@@ -1,4 +1,5 @@
 BAZEL           = bazel
+DEP             = dep
 KCTL            = kubectl
 REDIS_POD       = $(shell $(KCTL) get pods -l app=redis -o jsonpath='{.items[0].metadata.name}')
 REDIS_CLI_EXEC  = $(KCTL) exec -it $(REDIS_POD) -- redis-cli
@@ -10,11 +11,16 @@ clean:
 build: clean gazelle
 	$(BAZEL) build //...
 
+dep-ensure:
+	$(DEP) ensure
+
 gazelle-repos:
 	$(BAZEL) run //:gazelle -- update-repos -from_file=Gopkg.lock
 
 gazelle: gazelle-repos
 	$(BAZEL) run //:gazelle
+
+go-setup: dep-ensure gazelle
 
 docker-registry:
 	docker run -d -p 5000:5000 --restart=always --name registry registry:2
