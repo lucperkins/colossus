@@ -128,6 +128,19 @@ spec:
           imagePullPolicy: Never
           ports:
             - containerPort: 3000
+          env:
+          - name: AUTH_SERVICE_PORT
+            value: 8888
+          - name: AUTH_SERVICE_HOST
+            value: colossus-auth-svc
+          - name: DATA_SERVICE_PORT
+            value: 1111
+          - name: DATA_SERVICE_HOST
+            value: colossus-data-svc
+          - name: USERINFO_SERVICE_PORT
+            value: 7777
+          - name: USERINFO_SERVICE_HOST
+            value: colossus-userinfo-svc
 ---
 apiVersion: v1
 kind: Service

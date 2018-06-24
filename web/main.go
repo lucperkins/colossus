@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -20,10 +21,16 @@ import (
 )
 
 const (
-	PORT                  = 3000
-	AUTH_SERVICE_PORT     = 8888
-	DATA_SERVICE_PORT     = 1111
-	USERINFO_SERVICE_PORT = 7777
+	PORT = 3000
+)
+
+var (
+	authServiceHost     = os.Getenv("AUTH_SERVICE_HOST")
+	authServicePort     = int(os.Getenv("AUTH_SERVICE_PORT"))
+	dataServiceHost     = os.Getenv("DATA_SERVICE_HOST")
+	dataServicePort     = int(os.Getenv("DATA_SERVICE_PORT"))
+	userinfoServiceHost = os.Getenv("USERINFO_SERVICE_HOST")
+	userinfoServicePort = int(os.Getenv("USERINFO_SERVICE_PORT"))
 )
 
 type HttpServer struct {
@@ -229,7 +236,7 @@ func prometheusWebCounter() *prometheus.CounterVec {
 
 func main() {
 	authConn, err := grpc.Dial(
-		fmt.Sprintf("colossus-auth-svc:%d", AUTH_SERVICE_PORT), grpc.WithInsecure())
+		fmt.Sprintf("colossus-%s-svc:%d", authServiceHost, authServicePort), grpc.WithInsecure())
 
 	if err != nil {
 		panic(err)
@@ -238,7 +245,7 @@ func main() {
 	log.Print("Established connection with auth service")
 
 	dataConn, err := grpc.Dial(
-		fmt.Sprintf("colossus-data-svc:%d", DATA_SERVICE_PORT), grpc.WithInsecure())
+		fmt.Sprintf("%s:%d", dataServiceHost, dataServicePort), grpc.WithInsecure())
 
 	if err != nil {
 		panic(err)
@@ -247,7 +254,7 @@ func main() {
 	log.Print("Established connection with data service")
 
 	userInfoConn, err := grpc.Dial(
-		fmt.Sprintf("colossus-userinfo-svc:%d", USERINFO_SERVICE_PORT), grpc.WithInsecure())
+		fmt.Sprintf("%s:%d", userinfoServiceHost, userinfoServicePort), grpc.WithInsecure())
 
 	if err != nil {
 		panic(err)
