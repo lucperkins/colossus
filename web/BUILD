@@ -9,6 +9,7 @@ go_library(
         "//proto/auth:go_default_library",
         "//proto/data:go_default_library",
         "//proto/userinfo:go_default_library",
+        "@com_github_caarlos0_env//:go_default_library",
         "@com_github_go_chi_chi//:go_default_library",
         "@com_github_go_chi_chi//middleware:go_default_library",
         "@com_github_prometheus_client_golang//prometheus:go_default_library",

@@ -8,6 +8,12 @@
   revision = "3a771d992973f24aa725d07868b467d1ddfceafb"
 
 [[projects]]
+  name = "github.com/caarlos0/env"
+  packages = ["."]
+  revision = "1cddc31c48c56ecd700d873edb9fd5b6f5df922a"
+  version = "v3.3.0"
+
+[[projects]]
   name = "github.com/go-chi/chi"
   packages = [
     ".",
@@ -172,6 +178,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "38879ed1a6ba1374b7edb3eb9368c5c352c7b5886b0f9b6ea3341df1eb305f01"
+  inputs-digest = "5197bb803493daf58cd5b285ec7e558965a7c2cd853681b87351b8f8ace93b2e"
   solver-name = "gps-cdcl"
   solver-version = 1

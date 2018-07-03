@@ -6,10 +6,10 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 	"time"
 
+	"github.com/caarlos0/env"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/lucperkins/colossus/proto/auth"
@@ -24,22 +24,24 @@ const (
 	PORT = 3000
 )
 
-var (
-	authServiceHost     = os.Getenv("AUTH_SERVICE_HOST")
-	authServicePort     = int(os.Getenv("AUTH_SERVICE_PORT"))
-	dataServiceHost     = os.Getenv("DATA_SERVICE_HOST")
-	dataServicePort     = int(os.Getenv("DATA_SERVICE_PORT"))
-	userinfoServiceHost = os.Getenv("USERINFO_SERVICE_HOST")
-	userinfoServicePort = int(os.Getenv("USERINFO_SERVICE_PORT"))
-)
+type (
+	HttpServer struct {
+		authClient     auth.AuthServiceClient
+		dataClient     data.DataServiceClient
+		renderer       *render.Render
+		userInfoClient userinfo.UserInfoClient
+		httpReqs       *prometheus.CounterVec
+	}
 
-type HttpServer struct {
-	authClient     auth.AuthServiceClient
-	dataClient     data.DataServiceClient
-	renderer       *render.Render
-	userInfoClient userinfo.UserInfoClient
-	httpReqs       *prometheus.CounterVec
-}
+	Config struct {
+		authServiceHost     string `env:"AUTH_SERVICE_HOST"`
+		authServicePort     int    `env:"AUTH_SERVICE_PORT"`
+		dataServiceHost     string `env:"DATA_SERVICE_HOST"`
+		dataServicePort     int    `env:"DATA_SERVICE_PORT"`
+		userinfoServiceHost string `env:"USERINFO_SERVICE_HOST"`
+		userinfoServicePort int    `env:"USERINFO_SERVICE_PORT"`
+	}
+)
 
 func (s *HttpServer) PrometheusMetrics(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -235,8 +237,14 @@ func prometheusWebCounter() *prometheus.CounterVec {
 }
 
 func main() {
+	cfg := Config{}
+
+	if err := env.Parse(&cfg); err != nil {
+		log.Fatalf("Could not parse environment variables: %v", err)
+	}
+
 	authConn, err := grpc.Dial(
-		fmt.Sprintf("colossus-%s-svc:%d", authServiceHost, authServicePort), grpc.WithInsecure())
+		fmt.Sprintf("colossus-%s-svc:%d", cfg.authServiceHost, cfg.authServicePort), grpc.WithInsecure())
 
 	if err != nil {
 		panic(err)
@@ -245,7 +253,7 @@ func main() {
 	log.Print("Established connection with auth service")
 
 	dataConn, err := grpc.Dial(
-		fmt.Sprintf("%s:%d", dataServiceHost, dataServicePort), grpc.WithInsecure())
+		fmt.Sprintf("%s:%d", cfg.dataServiceHost, cfg.dataServicePort), grpc.WithInsecure())
 
 	if err != nil {
 		panic(err)
@@ -254,7 +262,7 @@ func main() {
 	log.Print("Established connection with data service")
 
 	userInfoConn, err := grpc.Dial(
-		fmt.Sprintf("%s:%d", userinfoServiceHost, userinfoServicePort), grpc.WithInsecure())
+		fmt.Sprintf("%s:%d", cfg.userinfoServiceHost, cfg.userinfoServicePort), grpc.WithInsecure())
 
 	if err != nil {
 		panic(err)

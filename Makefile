@@ -31,7 +31,7 @@ minikube-start:
 minikube-setup:
 	minikube addons enable ingress
 
-docker-local-push: gazelle
+docker-local-push: go-setup
 	$(BAZEL) run //:colossus-web -- --norun
 	$(BAZEL) run //:colossus-auth -- --norun
 	$(BAZEL) run //:colossus-data -- --norun
