@@ -1,4 +1,5 @@
 syntax = "proto3";
+
 option go_package = "github.com/lucperkins/colossus/proto/auth";
 
 package auth;
