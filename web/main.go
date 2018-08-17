@@ -35,11 +35,11 @@ type (
 
 	Config struct {
 		authServiceHost     string `env:"AUTH_SERVICE_HOST"`
-		authServicePort     int    `env:"AUTH_SERVICE_PORT"`
+		authServicePort     string `env:"AUTH_SERVICE_PORT"`
 		dataServiceHost     string `env:"DATA_SERVICE_HOST"`
-		dataServicePort     int    `env:"DATA_SERVICE_PORT"`
+		dataServicePort     string `env:"DATA_SERVICE_PORT"`
 		userinfoServiceHost string `env:"USERINFO_SERVICE_HOST"`
-		userinfoServicePort int    `env:"USERINFO_SERVICE_PORT"`
+		userinfoServicePort string `env:"USERINFO_SERVICE_PORT"`
 	}
 )
 
@@ -244,7 +244,7 @@ func main() {
 	}
 
 	authConn, err := grpc.Dial(
-		fmt.Sprintf("colossus-%s-svc:%d", cfg.authServiceHost, cfg.authServicePort), grpc.WithInsecure())
+		fmt.Sprintf("colossus-%s-svc:%s", cfg.authServiceHost, cfg.authServicePort), grpc.WithInsecure())
 
 	if err != nil {
 		panic(err)
@@ -253,7 +253,7 @@ func main() {
 	log.Print("Established connection with auth service")
 
 	dataConn, err := grpc.Dial(
-		fmt.Sprintf("%s:%d", cfg.dataServiceHost, cfg.dataServicePort), grpc.WithInsecure())
+		fmt.Sprintf("%s:%s", cfg.dataServiceHost, cfg.dataServicePort), grpc.WithInsecure())
 
 	if err != nil {
 		panic(err)
@@ -262,7 +262,7 @@ func main() {
 	log.Print("Established connection with data service")
 
 	userInfoConn, err := grpc.Dial(
-		fmt.Sprintf("%s:%d", cfg.userinfoServiceHost, cfg.userinfoServicePort), grpc.WithInsecure())
+		fmt.Sprintf("%s:%s", cfg.userinfoServiceHost, cfg.userinfoServicePort), grpc.WithInsecure())
 
 	if err != nil {
 		panic(err)

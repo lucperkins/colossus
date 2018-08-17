@@ -4,6 +4,9 @@ KCTL            = kubectl
 REDIS_POD       = $(shell $(KCTL) get pods -l app=redis -o jsonpath='{.items[0].metadata.name}')
 REDIS_CLI_EXEC  = $(KCTL) exec -it $(REDIS_POD) -- redis-cli
 
+dev:
+	skaffold dev
+
 clean:
 	$(BAZEL) clean --expunge
 
