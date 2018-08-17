@@ -122,7 +122,6 @@ spec:
       containers:
         - name: colossus-web
           image: colossus/web
-          imagePullPolicy: Never
           ports:
             - containerPort: 3000
           env:
