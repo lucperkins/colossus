@@ -34,12 +34,6 @@ minikube-start:
 minikube-setup:
 	minikube addons enable ingress
 
-docker-local-push: go-setup
-	$(BAZEL) run //:colossus-web -- --norun
-	$(BAZEL) run //:colossus-auth -- --norun
-	$(BAZEL) run //:colossus-data -- --norun
-	$(BAZEL) run //:colossus-userinfo -- --norun
-
 k8s-redis-deploy:
 	$(KCTL) apply -f k8s/redis.yaml
 
@@ -55,7 +49,7 @@ redis-set-password:
 redis-get-password:
 	$(REDIS_CLI_EXEC) GET password
 
-deploy: docker-local-push k8s-colossus-deploy
+deploy: k8s-colossus-deploy
 
 restart-colossus:
 	$(KCTL) delete -f k8s/colossus.yaml

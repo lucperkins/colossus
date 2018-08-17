@@ -21,11 +21,11 @@ import (
 )
 
 const (
-	PORT = 3000
+	port = 3000
 )
 
 type (
-	HttpServer struct {
+	httpServer struct {
 		authClient     auth.AuthServiceClient
 		dataClient     data.DataServiceClient
 		renderer       *render.Render
@@ -33,17 +33,17 @@ type (
 		httpReqs       *prometheus.CounterVec
 	}
 
-	Config struct {
-		authServiceHost     string `env:"AUTH_SERVICE_HOST"`
-		authServicePort     string `env:"AUTH_SERVICE_PORT"`
-		dataServiceHost     string `env:"DATA_SERVICE_HOST"`
-		dataServicePort     string `env:"DATA_SERVICE_PORT"`
-		userinfoServiceHost string `env:"USERINFO_SERVICE_HOST"`
-		userinfoServicePort string `env:"USERINFO_SERVICE_PORT"`
+	config struct {
+		AuthServiceHost     string `env:"AUTH_SERVICE_HOST"`
+		AuthServicePort     string `env:"AUTH_SERVICE_PORT"`
+		DataServiceHost     string `env:"DATA_SERVICE_HOST"`
+		DataServicePort     string `env:"DATA_SERVICE_PORT"`
+		UserinfoServiceHost string `env:"USERINFO_SERVICE_HOST"`
+		UserinfoServicePort string `env:"USERINFO_SERVICE_PORT"`
 	}
 )
 
-func (s *HttpServer) PrometheusMetrics(next http.Handler) http.Handler {
+func (s *httpServer) PrometheusMetrics(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
 
@@ -55,7 +55,7 @@ func (s *HttpServer) PrometheusMetrics(next http.Handler) http.Handler {
 	})
 }
 
-func (s *HttpServer) authenticate(next http.Handler) http.Handler {
+func (s *httpServer) authenticate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.RequestURI == "/metrics" {
 			next.ServeHTTP(w, r)
@@ -94,7 +94,7 @@ func (s *HttpServer) authenticate(next http.Handler) http.Handler {
 	})
 }
 
-func (s *HttpServer) handleString(w http.ResponseWriter, r *http.Request) {
+func (s *httpServer) handleString(w http.ResponseWriter, r *http.Request) {
 	requestString := r.Header.Get("String")
 
 	if requestString == "" {
@@ -107,7 +107,7 @@ func (s *HttpServer) handleString(w http.ResponseWriter, r *http.Request) {
 	s.dataHandler(ctx, requestString, w)
 }
 
-func (s *HttpServer) handleStream(w http.ResponseWriter, r *http.Request) {
+func (s *httpServer) handleStream(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
 	defer cancel()
 
@@ -141,7 +141,7 @@ func (s *HttpServer) handleStream(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (s *HttpServer) handlePut(w http.ResponseWriter, r *http.Request) {
+func (s *httpServer) handlePut(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
 	defer cancel()
 
@@ -179,7 +179,7 @@ func (s *HttpServer) handlePut(w http.ResponseWriter, r *http.Request) {
 	s.renderer.JSON(w, http.StatusAccepted, value)
 }
 
-func (s *HttpServer) dataHandler(ctx context.Context, requestString string, w http.ResponseWriter) {
+func (s *httpServer) dataHandler(ctx context.Context, requestString string, w http.ResponseWriter) {
 	req := &data.DataRequest{
 		Request: requestString,
 	}
@@ -197,7 +197,7 @@ func (s *HttpServer) dataHandler(ctx context.Context, requestString string, w ht
 	w.Write([]byte(value))
 }
 
-func (s *HttpServer) handleUserInfo(w http.ResponseWriter, r *http.Request) {
+func (s *httpServer) handleUserInfo(w http.ResponseWriter, r *http.Request) {
 	var username string
 
 	if r.Header.Get("Username") == "" {
@@ -237,14 +237,14 @@ func prometheusWebCounter() *prometheus.CounterVec {
 }
 
 func main() {
-	cfg := Config{}
+	cfg := config{}
 
 	if err := env.Parse(&cfg); err != nil {
 		log.Fatalf("Could not parse environment variables: %v", err)
 	}
 
 	authConn, err := grpc.Dial(
-		fmt.Sprintf("colossus-%s-svc:%s", cfg.authServiceHost, cfg.authServicePort), grpc.WithInsecure())
+		fmt.Sprintf("colossus-%s-svc:%s", cfg.AuthServiceHost, cfg.AuthServicePort), grpc.WithInsecure())
 
 	if err != nil {
 		panic(err)
@@ -253,7 +253,7 @@ func main() {
 	log.Print("Established connection with auth service")
 
 	dataConn, err := grpc.Dial(
-		fmt.Sprintf("%s:%s", cfg.dataServiceHost, cfg.dataServicePort), grpc.WithInsecure())
+		fmt.Sprintf("%s:%s", cfg.DataServiceHost, cfg.DataServicePort), grpc.WithInsecure())
 
 	if err != nil {
 		panic(err)
@@ -262,7 +262,7 @@ func main() {
 	log.Print("Established connection with data service")
 
 	userInfoConn, err := grpc.Dial(
-		fmt.Sprintf("%s:%s", cfg.userinfoServiceHost, cfg.userinfoServicePort), grpc.WithInsecure())
+		fmt.Sprintf("%s:%s", cfg.UserinfoServiceHost, cfg.UserinfoServicePort), grpc.WithInsecure())
 
 	if err != nil {
 		panic(err)
@@ -284,7 +284,7 @@ func main() {
 		log.Fatalf("Could not register Prometheus httpReqs counter vec: %v", err)
 	}
 
-	server := HttpServer{
+	server := httpServer{
 		authClient:     authClient,
 		dataClient:     dataClient,
 		renderer:       renderer,
@@ -311,7 +311,7 @@ func main() {
 	// The Prometheus metrics handler
 	r.Handle("/metrics", prometheus.Handler())
 
-	log.Printf("Now starting the server on port %d...", PORT)
+	log.Printf("Now starting the server on port %d...", port)
 
-	http.ListenAndServe(fmt.Sprintf(":%d", PORT), r)
+	http.ListenAndServe(fmt.Sprintf(":%d", port), r)
 }
