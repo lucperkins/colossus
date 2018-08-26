@@ -29,7 +29,7 @@ docker-registry:
 	docker run -d -p 5000:5000 --restart=always --name registry registry:2
 
 minikube-start:
-	minikube start --memory 5120 --cpus 4 --insecure-registry localhost:5000
+	minikube start --memory 5120 --cpus 4
 
 minikube-setup:
 	minikube addons enable ingress
