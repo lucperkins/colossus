@@ -6,19 +6,15 @@ build:
   local: {}
   artifacts:
   - imageName: colossus/web
-    workspace: .
     bazel:
       target: //:colossus-web.tar
   - imageName: colossus/auth
-    workspace: .
     bazel:
       target: //:colossus-auth.tar
   - imageName: colossus/userinfo
-    workspace: .
     bazel:
       target: //:colossus-userinfo.tar
   - imageName: colossus/data
-    workspace: .
     bazel:
       target: //:colossus-data.tar
 deploy:
