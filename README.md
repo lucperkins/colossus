@@ -36,52 +36,39 @@ What do these services actually do?
 
 Getting all of these technologies to work together was a real challenge. I had to dig through countless GitHub issues and dozens of example projects to make all these things work together. I'm offering this repo as a starter pack for other people with a Bazel monorepo targeting Kubernetes.
 
+## Prerequisites
+
+* [Minikube](https://github.com/kubernetes/minikube)
+* [Skaffold](https://github.com/GoogleContainerTools/skaffold)
+* [Bazel](https://bazel.build/)
+
 ## Running Colossus locally
 
-In order to run Colossus locally, you'll need to run a local Docker registry. If your Docker daemon is started up, you can run the local registry like this:
+In order to run Colossus locally, you'll need to start up [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube/) with some extra memory and CPUs:
 
 ```bash
-$ docker run -d -p 5000:5000 --restart=always --name registry registry:2
+minikube start --memory 5120 --cpus 4
 
 # Alternatively
-$ make docker-registry
+make minikube-start
 ```
 
-Once the registry is running, you'll need to start up [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube/) in conjunction with an insecure registry (i.e. the Docker registry running locally):
+Now Minikube is all set.
+
+To run Colossus in development mode (be patient, as building the Docker images will take a while):
 
 ```bash
-$ minikube start --insecure-registry localhost:5000
+skaffold dev
 
 # Alternatively
-$ make minikube-start
+make dev
 ```
 
-Once Minikube is up and running (use `minikube status` to check), you'll need to enable the ingress add-on and set the Docker environment:
+Once Colossus is up and running, you need to set a password for the authentication service. To set the password as `tonydanza` (which the later curl examples assume):
 
 ```bash
-$ minikube addons enable ingress
-
-# Alternatively
-$ make minikube-setup
-
-# Set up the Docker environment for Minikube
-$ eval $(minkube docker-env)
-```
-
-Now Minikube is all set. The one required dependency for Colossus is a Redis cluster. To run a one-node Redis cluster in Kubernetes-on-Minikube (configuration in [`k8s/redis.yaml`](k8s/redis.yaml)):
-
-```bash
-$ kubectl apply -f k8s/redis.yaml
-
-# Alternatively
-$ make k8s-redis-deploy
-```
-
-Once the Redis pod is up and running (you can check using `kubectl get pods -w -l app=redis`), you need to set a password for the authentication service. To set the password as `tonydanza` (which the later curl examples assume):
-
-```bash
-$ REDIS_POD=$(kubectl get pods -l app=redis -o jsonpath='{.items[0].metadata.name}')
-$ kubectl exec -it $REDIS_POD -- redis-cli SET password tonydanza
+REDIS_POD=$(kubectl get pods -l app=redis -o jsonpath='{.items[0].metadata.name}')
+kubectl exec -it $REDIS_POD -- redis-cli SET password tonydanza
 OK
 
 # Alternatively
@@ -91,24 +78,12 @@ $ make redis-set-password
 You can then verify that the password has been set throughout the cluster by running a `GET password` query from a different pod in the cluster:
 
 ```bash
-$ kubectl exec -it $REDIS_POD -- redis-cli GET password
+kubectl exec -it $REDIS_POD -- redis-cli GET password
 "tonydanza"
 
 # Alternative
 $ make redis-get-password
 ```
-
-Now that Redis is all set up, you can deploy Colossus using one command:
-
-```bash
-$ make deploy
-```
-
-Okay, that's suspiciously magical so I'll break it down into pieces. `make deploy` will do the following:
-
-1. Build Docker images for each service using Bazel
-1. Upload those images to the local Docker registry (in each case the image will be run using the `--norun` flag, which will upload the images without actually running them)
-1. Apply the Kubernetes configuration in [`k8s/colossus.yaml`](k8s/colossus.yaml), which has Kubernetes `Service` and `Deployment` configurations for each of the three services (each of which runs on three instances) as well as an `Ingress` configuration for access to the HTTP service
 
 Run `kubectl get pods` and if all of the pods have the status `Running` then Colossus is ready to take requests!
 

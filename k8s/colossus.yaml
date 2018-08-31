@@ -161,16 +161,3 @@ spec:
   backend:
     serviceName: colossus-web-svc
     servicePort: 3000
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: busybox
-spec:
-  containers:
-  - name: busybox
-    image: busybox
-    args:
-    - sh
-    - -c
-    - tail -f /dev/null
