@@ -8,7 +8,7 @@ clean:
 	$(BAZEL) clean --expunge
 
 .PHONY: build
-build: clean gazelle
+build: gazelle
 	$(BAZEL) build //...
 
 dep-ensure:
