@@ -1,24 +1,25 @@
-apiVersion: skaffold/v1alpha2
+apiVersion: skaffold/v1alpha4
 kind: Config
 build:
+  artifacts:
+  - image: colossus/web
+    bazel:
+      target: //:colossus-web.tar
+  - image: colossus/auth
+    bazel:
+      target: //:colossus-auth.tar
+  - image: colossus/userinfo
+    bazel:
+      target: //:colossus-userinfo.tar
+  - image: colossus/data
+    bazel:
+      target: //:colossus-data.tar
   tagPolicy:
     sha256: {}
   local: {}
-  artifacts:
-  - imageName: colossus/web
-    bazel:
-      target: //:colossus-web.tar
-  - imageName: colossus/auth
-    bazel:
-      target: //:colossus-auth.tar
-  - imageName: colossus/userinfo
-    bazel:
-      target: //:colossus-userinfo.tar
-  - imageName: colossus/data
-    bazel:
-      target: //:colossus-data.tar
 deploy:
   kubectl:
     manifests:
     - k8s/redis.yaml
     - k8s/colossus.yaml
+
