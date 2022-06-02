@@ -1,27 +1,49 @@
 workspace(name = "colossus")
 
+# Helpers
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
 # Versions
 PROMETHEUS_JAVA_VERSION = "0.4.0"
 
 # Imports basic Go rules for Bazel (e.g. go_binary)
-git_repository(
+http_archive(
     name = "io_bazel_rules_go",
-    remote = "https://github.com/bazelbuild/rules_go.git",
-    commit = "e4d0254fb249a09fb01f052b23d3baddae1b70ec",
+    sha256 = "f2dcd210c7095febe54b804bb1cd3a58fe8435a909db2ec04e31542631cf715c",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_go/releases/download/v0.31.0/rules_go-v0.31.0.zip",
+        "https://github.com/bazelbuild/rules_go/releases/download/v0.31.0/rules_go-v0.31.0.zip",
+    ],
 )
 
+
+load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
+
+go_rules_dependencies()
+
+go_register_toolchains(version = "1.18")
+
 # Imports the Gazelle tool for Go/Bazel
-git_repository(
+http_archive(
     name = "bazel_gazelle",
-    remote = "https://github.com/bazelbuild/bazel-gazelle",
-    commit = "644ec7202aa352b78d65bc66abc2c0616d76cc84",
+    sha256 = "5982e5463f171da99e3bdaeff8c0f48283a7a5f396ec5282910b9e8a49c0dd7e",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/bazel-gazelle/releases/download/v0.25.0/bazel-gazelle-v0.25.0.tar.gz",
+        "https://github.com/bazelbuild/bazel-gazelle/releases/download/v0.25.0/bazel-gazelle-v0.25.0.tar.gz",
+    ],
 )
+
+load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies", "go_repository")
+
+gazelle_dependencies()
 
 # Imports Docker rules for Bazel (e.g. docker_image)
 git_repository(
     name = "io_bazel_rules_docker",
     remote = "https://github.com/bazelbuild/rules_docker.git",
-    tag = "v0.4.0",
+    commit = "4d49182a85c745065e621c145238c5e9420ed91b",
+    shallow_since = "1518220198 -0800",
 )
 
 # Imports gRPC for Java rules (e.g. java_grpc_library)
