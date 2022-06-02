@@ -2,27 +2,27 @@
 
 This is an example project that combines several cloud native technologies that I really like and have been meaning to get working in a meaningful way:
 
-* The [Bazel](https://bazel.build) build tool
-* [Kubernetes](https://kubernetes.io) and [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube/)
-* [Protocol Buffers](https://developers.google.com/protocol-buffers/) and [gRPC](https://grpc.io)
-* [Docker](https://docker.com)
+- The [Bazel](https://bazel.build) build tool
+- [Kubernetes](https://kubernetes.io) and [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube/)
+- [Protocol Buffers](https://developers.google.com/protocol-buffers/) and [gRPC](https://grpc.io)
+- [Docker](https://docker.com)
 
 Colossus is basically a microservice architecture consisting of three services:
 
-Service | Where the code lives | Language
-:-------|:---------------------|:--------
-An HTTP service that takes web requests. This is the entry point into the backend services. | [`web`](web) | Go
-An authentication/authorization service | [`auth`](auth) | Go
-A "data" service that handles data requests | [`data`](data) | Java
-A "user info" service that doesn't do anything interesting yet, but it works and it's in C++! | [`userinfo`](userinfo) | C++
+| Service                                                                                       | Where the code lives   | Language |
+| :-------------------------------------------------------------------------------------------- | :--------------------- | :------- |
+| An HTTP service that takes web requests. This is the entry point into the backend services.   | [`web`](web)           | Go       |
+| An authentication/authorization service                                                       | [`auth`](auth)         | Go       |
+| A "data" service that handles data requests                                                   | [`data`](data)         | Java     |
+| A "user info" service that doesn't do anything interesting yet, but it works and it's in C++! | [`userinfo`](userinfo) | C++      |
 
 ## The services
 
 What do these services actually do?
 
-* The web service requires a `Password` header and a `String` header. The `Password` header is used for authentication and the `String` header is used as a data input. You need to make `POST` requests to the `/string` endpoint.
-* The auth service verifies the password passed to the web service. There is only one password that actually works: `tonydanza`. Use any other password and you'll get a `401 Unauthorized` HTTP error.
-* The data service handles words or strings that you pass to the web service using the `String` header. The data service simply capitalizes whatever you pass via that header and returns it.
+- The web service requires a `Password` header and a `String` header. The `Password` header is used for authentication and the `String` header is used as a data input. You need to make `POST` requests to the `/string` endpoint.
+- The auth service verifies the password passed to the web service. There is only one password that actually works: `tonydanza`. Use any other password and you'll get a `401 Unauthorized` HTTP error.
+- The data service handles words or strings that you pass to the web service using the `String` header. The data service simply capitalizes whatever you pass via that header and returns it.
 
 > Wait a second, these services don't do anything meaningful! Nope, they sure don't. But that's okay because the point of this project is to show you how to get the basic (yet not-at-all-trivial) plumbing to work. Colossus is a **boilerplate project** that's meant as a springboard to more complex and meaningful projects.
 
@@ -59,7 +59,7 @@ $ minikube addons enable ingress
 $ make minikube-setup
 
 # Set up the Docker environment for Minikube
-$ eval $(minkube docker-env)
+$ eval $(minikube docker-env)
 ```
 
 Now Minikube is all set. The one required dependency for Colossus is a Redis cluster. To run a one-node Redis cluster in Kubernetes-on-Minikube (configuration in [`k8s/redis.yaml`](k8s/redis.yaml)):
@@ -202,12 +202,12 @@ $ make k8s-monitoring-deploy
 
 This is a humble start but I'd like to expand it a great deal in the future. In particular I'd like to add:
 
-* A service mesh like [Conduit](https://conduit.io) or [Istio](https://istio.io/).
-* A [Helm](https://helm.sh/) chart
-* Some "real" services that do meaningful things, like interact with databases running on k8s or even a cloud service like Google BigTable.
-* Real REST capabilities. Right now our web service doesn't do anything cool. At the very least it should provide some interesting CRUD operations.
-* More languages. Right now Go and Java are pretty much the only languages that can be easily incorporated into a gRPC-plus-Bazel setup. I'm sure that support for Python, C++, and others is on the way, and I'll use those capabilities as the opportunity arises.
-* Componentize service building. Right now each service is its own self-contained universe. I'd like to create a reusable service abstraction (or re-use abstractions built by others) for creating new services, especially more robust configuration management.
-* Integration testing for specific services and the whole thing
+- A service mesh like [Conduit](https://conduit.io) or [Istio](https://istio.io/).
+- A [Helm](https://helm.sh/) chart
+- Some "real" services that do meaningful things, like interact with databases running on k8s or even a cloud service like Google BigTable.
+- Real REST capabilities. Right now our web service doesn't do anything cool. At the very least it should provide some interesting CRUD operations.
+- More languages. Right now Go and Java are pretty much the only languages that can be easily incorporated into a gRPC-plus-Bazel setup. I'm sure that support for Python, C++, and others is on the way, and I'll use those capabilities as the opportunity arises.
+- Componentize service building. Right now each service is its own self-contained universe. I'd like to create a reusable service abstraction (or re-use abstractions built by others) for creating new services, especially more robust configuration management.
+- Integration testing for specific services and the whole thing
 
 The good news is that the hard part---especially getting Bazel to build the right things and Kubernetes to use a local image registry---is already behind me, so adding new services is fairly trivial.
